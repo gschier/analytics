@@ -38,10 +38,13 @@ type AnalyticsEvent struct {
 }
 
 type AnalyticsPageview struct {
-	ID        string    `db:"id"         json:"id"`
-	CreatedAt time.Time `db:"created_at" json:"createdAt"`
-	Host      string    `db:"host"       json:"host"`
-	Path      string    `db:"path"       json:"path"`
+	ID         string    `db:"id"          json:"id"`
+	CreatedAt  time.Time `db:"created_at"  json:"createdAt"`
+	Host       string    `db:"host"        json:"host"`
+	Path       string    `db:"path"        json:"path"`
+	UserAgent  string    `db:"user_agent"  json:"userAgent"`
+	ScreenSize string    `db:"screen_size" json:"screenSize"`
+	TimeZone   string    `db:"time_zone"   json:"timeZone"`
 }
 
 func (s *dbStore) GetAccountByEmail(ctx context.Context, email string) (*Account, error) {
@@ -91,7 +94,7 @@ func (s *dbStore) CreateAnalyticsEvent(ctx context.Context, websiteID, name stri
 	return &event, nil
 }
 
-func (s *dbStore) ListAnalyticsPageviews(ctx context.Context) ([]AnalyticsPageview, error) {
+func (s *dbStore) FindAnalyticsPageviews(ctx context.Context) ([]AnalyticsPageview, error) {
 	var pageviews []AnalyticsPageview
 	err := s.db.SelectContext(ctx, &pageviews, `SELECT * FROM analytics_pageviews ORDER BY created_at DESC`)
 	return pageviews, err
@@ -121,4 +124,17 @@ func (s *dbStore) CreateWebsite(ctx context.Context, accountID, name string) (*W
 	}
 
 	return &website, nil
+}
+
+func (s *dbStore) FindWebsitesByAccountID(ctx context.Context, accountID string) ([]Website, error) {
+	var websites []Website
+	err := s.db.SelectContext(ctx, &websites, `
+		SELECT * FROM websites
+		WHERE account_id = $1;
+	`, accountID)
+	if err != nil {
+		return nil, err
+	}
+
+	return websites, nil
 }

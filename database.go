@@ -130,7 +130,11 @@ var migrations = []Migration{{
 			CREATE TABLE analytics_pageviews (
 			    id         TEXT PRIMARY KEY DEFAULT CONCAT('ap_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
 				website_id TEXT NOT NULL REFERENCES websites(id),
-			    created_at TIMESTAMP(3) DEFAULT NOW() NOT NULL
+			    created_at TIMESTAMP(3) DEFAULT NOW() NOT NULL,
+				host       TEXT NOT NULL,
+				path       TEXT NOT NULL,
+				screenSize TEXT NOT NULL,
+				TimeZone   TEXT NOT NULL
 			);
 		`)
 
