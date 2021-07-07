@@ -17,17 +17,26 @@ func main() {
 	db := NewDB()
 	if Config.MigrateOnStart {
 		mustMigrate(context.Background(), db.db)
+		// a, _ := db.CreateAccount(context.Background(), "greg@schier.co", "my-pass!")
+		// _, _ = db.CreateWebsite(context.Background(), a.ID, "schier.co")
 	}
 
 	handler := mux.NewRouter()
 	handler.Path("/").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		events, _ := db.ListEvents(r.Context())
+		events, _ := db.ListAnalyticsEvents(r.Context())
 		RespondJSON(w, events)
 	})
 
-	handler.Path("/page").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		events, _ := db.ListEvents(r.Context())
-		RespondJSON(w, events)
+	handler.Path("/event").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		name := r.URL.Query().Get("name")
+		websiteID := r.URL.Query().Get("website")
+		event, err := db.CreateAnalyticsEvent(r.Context(), websiteID, name)
+		if err != nil {
+			RespondError(w, err)
+			return
+		}
+
+		RespondJSON(w, event)
 	})
 
 	fmt.Println("[schier.co] \033[32;1mStarted server on http://" + Config.Host + ":" + Config.Port + "\033[0m")

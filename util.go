@@ -10,6 +10,11 @@ func RespondJSON(w http.ResponseWriter, v interface{}) {
 	enc := json.NewEncoder(w)
 	err := enc.Encode(v)
 	if err != nil {
-		_, _ = w.Write([]byte("Failed to encode output"))
+		RespondError(w, err)
 	}
+}
+
+func RespondError(w http.ResponseWriter, err error) {
+	w.Header().Set("Content-Type", "text/plain")
+	_, _ = w.Write([]byte(err.Error()))
 }

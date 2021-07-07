@@ -43,7 +43,7 @@ func migrate(ctx context.Context, db *sqlx.DB) error {
 	// Create migrations table if it doesn't exist
 	_, err := db.ExecContext(ctx, `
 		CREATE TABLE IF NOT EXISTS migrations (
-			id TEXT PRIMARY KEY DEFAULT CONCAT('mgtn_', SUBSTRING(REPLACE(gen_random_uuid()::TEXT, '-', ''), 0, 16)),
+			id TEXT PRIMARY KEY DEFAULT CONCAT('mgtn_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
 			name TEXT NOT NULL UNIQUE,
 			applied TIMESTAMP(3) DEFAULT NOW() NOT NULL
 		);
@@ -97,38 +97,41 @@ var migrations = []Migration{{
 	Name: "create_tables",
 	Forward: func(ctx context.Context, db *sqlx.DB) error {
 		_, err := db.ExecContext(ctx, `
-			CREATE OR REPLACE FUNCTION set_updated_at()   
-			RETURNS TRIGGER AS $$
-			BEGIN
-				NEW.updated_at = NOW();
-				RETURN NEW;   
-			END;
-			$$ LANGUAGE 'plpgsql';
-
-			-- Create Accounts Table
 			CREATE TABLE accounts (
-			    id TEXT PRIMARY KEY DEFAULT CONCAT('acct_', SUBSTRING(REPLACE(gen_random_uuid()::TEXT, '-', ''), 0, 16)),
-			    created_at TIMESTAMP(3) DEFAULT NOW() NOT NULL,
-			    updated_at TIMESTAMP(3) DEFAULT NOW() NOT NULL,
-			    email TEXT NOT NULL UNIQUE,
+			    id              TEXT PRIMARY KEY DEFAULT CONCAT('acct_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
+			    created_at      TIMESTAMP(3) DEFAULT NOW() NOT NULL,
+			    updated_at      TIMESTAMP(3) DEFAULT NOW() NOT NULL,
+			    email           TEXT NOT NULL UNIQUE,
 				hashed_password TEXT NOT NULL
 			);
-			CREATE TRIGGER set_account_updated BEFORE UPDATE ON accounts FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
 
-			-- Create Websites Table
 			CREATE TABLE websites (
-			    id TEXT PRIMARY KEY DEFAULT CONCAT('site_', SUBSTRING(REPLACE(gen_random_uuid()::TEXT, '-', ''), 0, 16)),
+			    id         TEXT PRIMARY KEY DEFAULT CONCAT('site_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
+			    account_id TEXT NOT NULL REFERENCES accounts(id),
 			    created_at TIMESTAMP(3) DEFAULT NOW() NOT NULL,
-			    updated_at TIMESTAMP(3) DEFAULT NOW() NOT NULL
+			    updated_at TIMESTAMP(3) DEFAULT NOW() NOT NULL,
+				domain     VARCHAR(256) NOT NULL UNIQUE
 			);
-			CREATE TRIGGER set_websites_updated BEFORE UPDATE ON websites FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
 
-			-- Create Events Table
-			CREATE TABLE events (
-			    id TEXT PRIMARY KEY DEFAULT CONCAT('evnt_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
+			CREATE TABLE sessions (
+			    id           TEXT PRIMARY KEY DEFAULT CONCAT('sess_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
+			    account_id   TEXT NOT NULL REFERENCES accounts(id),
+			    refreshed_at TIMESTAMP(3) DEFAULT NOW() NOT NULL,
+			    created_at   TIMESTAMP(3) DEFAULT NOW() NOT NULL
+			);
+
+			CREATE TABLE analytics_events (
+			    id         TEXT PRIMARY KEY DEFAULT CONCAT('ae_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
+				website_id TEXT NOT NULL REFERENCES websites(id),
+			    created_at TIMESTAMP(3) DEFAULT NOW() NOT NULL,
+			    name       VARCHAR(64) NOT NULL
+			);
+
+			CREATE TABLE analytics_pageviews (
+			    id         TEXT PRIMARY KEY DEFAULT CONCAT('ap_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
+				website_id TEXT NOT NULL REFERENCES websites(id),
 			    created_at TIMESTAMP(3) DEFAULT NOW() NOT NULL
 			);
-			CREATE TRIGGER set_events_updated BEFORE UPDATE ON events FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
 		`)
 
 		return err
