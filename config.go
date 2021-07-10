@@ -14,7 +14,7 @@ type config struct {
 
 var Config config
 
-func init() {
+func InitConfig() {
 	envconfig.MustProcess("", &Config)
 	// b, _ := json.MarshalIndent(&Config, "|  ", "  ")
 	// fmt.Printf("\n\n|\n|  %s\n|\n", b)

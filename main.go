@@ -16,6 +16,8 @@ func main() {
 	fmt.Printf("\u001B[32;1m┃                  analytics                  ┃\u001B[0m\n")
 	fmt.Printf("\u001B[32;1m┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\u001B[0m\n")
 
+	InitConfig()
+
 	db := NewDB()
 	if Config.MigrateOnStart {
 		mustMigrate(context.Background(), db.db)
@@ -38,49 +40,18 @@ func main() {
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	r.Path("/").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		type bucket struct {
-			Count   int
-			Percent int
-		}
-		events, _ := db.ListAnalyticsEvents(r.Context())
-		buckets := make([]bucket, 50)
-
-		bucketDuration := time.Minute
-
-		for n := 0; n < len(buckets); n++ {
-			nd := time.Duration(n)
-			now := time.Now()
-			nowRounded := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute()+1, 0, 0, now.Location())
-			start := nowRounded.Add(-(nd + 1) * bucketDuration)
-			end := nowRounded.Add(-nd * bucketDuration)
-
-			for _, e := range events {
-				if e.CreatedAt.After(start) && e.CreatedAt.Before(end) {
-					buckets[n].Count += 1
-				}
-			}
+		events, err := db.ListAnalyticsEvents(r.Context())
+		if err != nil {
+			http.Error(w, "Failed to fetch analytics events", http.StatusInternalServerError)
+			return
 		}
 
-		maxCount := 0
-		for _, b := range buckets {
-			if b.Count > maxCount {
-				maxCount = b.Count
-			}
-		}
+		buckets := Rollup(time.Now().Add(-time.Hour/2), time.Now(), time.Minute, events)
 
-		for i := range buckets {
-			buckets[i].Percent = int(float64(buckets[i].Count) / float64(maxCount) * 100)
-		}
-
-		reverseBuckets := make([]bucket, len(buckets))
-		for i := range buckets {
-			reverseBuckets[i] = buckets[len(buckets)-i-1]
-		}
-
-		RenderTemplate(w, "index.gohtml", map[string]interface{}{
+		RenderTemplate(r, w, "index.gohtml", map[string]interface{}{
 			"Title":   "Analytics",
 			"Events":  events,
-			"Buckets": reverseBuckets,
+			"Buckets": buckets,
 		})
 	})
 

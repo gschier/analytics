@@ -31,10 +31,11 @@ type Website struct {
 }
 
 type AnalyticsEvent struct {
-	ID        string    `db:"id"         json:"id"`
-	WebsiteID string    `db:"website_id" json:"websiteId"`
-	CreatedAt time.Time `db:"created_at" json:"createdAt"`
-	Name      string    `db:"name"       json:"name"`
+	ID         string    `db:"id"          json:"id"`
+	WebsiteID  string    `db:"website_id"  json:"websiteId"`
+	CreatedAt  time.Time `db:"created_at"  json:"createdAt"`
+	SessionKey string    `db:"session_key" json:"sessionKey"`
+	Name       string    `db:"name"        json:"name"`
 }
 
 type AnalyticsPageview struct {
@@ -46,6 +47,43 @@ type AnalyticsPageview struct {
 	ScreenSize string    `db:"screen_size" json:"screenSize"`
 	TimeZone   string    `db:"time_zone"   json:"timeZone"`
 }
+
+// type AnalyticsEventBucket struct {
+// 	ID        string    `db:"id"          json:"id"`
+// 	WebsiteID string    `db:"website_id"  json:"websiteId"`
+// 	CreatedAt time.Time `db:"created_at"  json:"createdAt"`
+// 	Start     time.Time `db:"start"       json:"start"`
+// 	End       time.Time `db:"end"         json:"end"`
+// 	Name      string    `db:"name"        json:"name"`
+// }
+//
+// type AnalyticsPageviewBucket struct {
+// 	ID        string    `db:"id"          json:"id"`
+// 	WebsiteID string    `db:"website_id"  json:"websiteId"`
+// 	CreatedAt time.Time `db:"created_at"  json:"createdAt"`
+// 	Start     time.Time `db:"start"       json:"start"`
+// 	End       time.Time `db:"end"         json:"end"`
+// 	Host      string    `db:"host"        json:"host"`
+// 	Path      string    `db:"path"        json:"path"`
+// }
+
+// type HLLColumn struct {
+// 	Sketch *hyperloglog.Sketch
+// }
+//
+// func (h HLLColumn) Value() (driver.Value, error) {
+// 	return h.Sketch.MarshalBinary()
+// }
+//
+// func (h HLLColumn) Scan(v interface{}) error {
+// 	sketch := hyperloglog.New()
+// 	err := sketch.UnmarshalBinary(v.([]byte))
+// 	if err != nil {
+// 		return err
+// 	}
+// 	h.Sketch = sketch
+// 	return nil
+// }
 
 func (s *dbStore) GetAccountByEmail(ctx context.Context, email string) (*Account, error) {
 	var account Account

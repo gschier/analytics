@@ -45,7 +45,7 @@ func migrate(ctx context.Context, db *sqlx.DB) error {
 		CREATE TABLE IF NOT EXISTS migrations (
 			id TEXT PRIMARY KEY DEFAULT CONCAT('mgtn_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
 			name TEXT NOT NULL UNIQUE,
-			applied TIMESTAMP(3) DEFAULT NOW() NOT NULL
+			applied TIMESTAMP(3) WITH TIME ZONE DEFAULT NOW() NOT NULL
 		);
 	`)
 	if err != nil {
@@ -99,8 +99,8 @@ var migrations = []Migration{{
 		_, err := db.ExecContext(ctx, `
 			CREATE TABLE accounts (
 			    id              TEXT PRIMARY KEY DEFAULT CONCAT('acct_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
-			    created_at      TIMESTAMP(3) DEFAULT NOW() NOT NULL,
-			    updated_at      TIMESTAMP(3) DEFAULT NOW() NOT NULL,
+			    created_at      TIMESTAMP(3) WITH TIME ZONE DEFAULT NOW() NOT NULL,
+			    updated_at      TIMESTAMP(3) WITH TIME ZONE DEFAULT NOW() NOT NULL,
 			    email           TEXT NOT NULL UNIQUE,
 				hashed_password TEXT NOT NULL
 			);
@@ -108,29 +108,29 @@ var migrations = []Migration{{
 			CREATE TABLE websites (
 			    id         TEXT PRIMARY KEY DEFAULT CONCAT('site_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
 			    account_id TEXT NOT NULL REFERENCES accounts(id),
-			    created_at TIMESTAMP(3) DEFAULT NOW() NOT NULL,
-			    updated_at TIMESTAMP(3) DEFAULT NOW() NOT NULL,
+			    created_at TIMESTAMP(3) WITH TIME ZONE DEFAULT NOW() NOT NULL,
+			    updated_at TIMESTAMP(3) WITH TIME ZONE DEFAULT NOW() NOT NULL,
 				domain     VARCHAR(256) NOT NULL UNIQUE
 			);
 
 			CREATE TABLE sessions (
 			    id           TEXT PRIMARY KEY DEFAULT CONCAT('sess_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
 			    account_id   TEXT NOT NULL REFERENCES accounts(id),
-			    refreshed_at TIMESTAMP(3) DEFAULT NOW() NOT NULL,
-			    created_at   TIMESTAMP(3) DEFAULT NOW() NOT NULL
+			    refreshed_at TIMESTAMP(3) WITH TIME ZONE DEFAULT NOW() NOT NULL,
+			    created_at   TIMESTAMP(3) WITH TIME ZONE DEFAULT NOW() NOT NULL
 			);
 
 			CREATE TABLE analytics_events (
 			    id         TEXT PRIMARY KEY DEFAULT CONCAT('ae_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
 				website_id TEXT NOT NULL REFERENCES websites(id),
-			    created_at TIMESTAMP(3) DEFAULT NOW() NOT NULL,
+			    created_at TIMESTAMP(3) WITH TIME ZONE DEFAULT NOW() NOT NULL,
 			    name       VARCHAR(64) NOT NULL
 			);
 
 			CREATE TABLE analytics_pageviews (
 			    id         TEXT PRIMARY KEY DEFAULT CONCAT('ap_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
 				website_id TEXT NOT NULL REFERENCES websites(id),
-			    created_at TIMESTAMP(3) DEFAULT NOW() NOT NULL,
+			    created_at TIMESTAMP(3) WITH TIME ZONE DEFAULT NOW() NOT NULL,
 				host       TEXT NOT NULL,
 				path       TEXT NOT NULL,
 				screenSize TEXT NOT NULL,

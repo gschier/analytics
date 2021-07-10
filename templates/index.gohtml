@@ -186,7 +186,7 @@
         font-size: var(--font-size-lg);
       }
     </style>
-    <script src="https://analytics-production.up.railway.app/static/tracker.js" data-website="site_bbb1890f54d54fd5b89c983ea8b7a38d"></script>
+    <script src="//{{.Host}}/static/tracker.js" data-website="site_2ad588dd233a4af7a04b17f6e1afc714"></script>
 </head>
 <body>
 <h1 class="my-4">{{.Title}}</h1>
@@ -236,7 +236,7 @@
 
 <div style="width:100%;display:flex;flex-direction:row;height:100px;justify-content:flex-end;align-items:flex-end;" class="my-4">
     {{range .Buckets}}
-        <div style="min-height:var(--space-1px);height:{{.Percent}}%;flex-grow:1" class="w-full mx-1px bg-primary-500 hover:bg-primary-600"></div>
+        <div style="min-height:var(--space-1px);height:{{.Count}}px;flex-grow:1" class="w-full mx-1px bg-primary-500 hover:bg-primary-600"></div>
     {{end}}
 </div>
 
