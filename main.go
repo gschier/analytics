@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"time"
 )
 
 func main() {
@@ -37,8 +38,49 @@ func main() {
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	r.Path("/").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		type bucket struct {
+			Count   int
+			Percent int
+		}
+		events, _ := db.ListAnalyticsEvents(r.Context())
+		buckets := make([]bucket, 50)
+
+		bucketDuration := time.Minute
+
+		for n := 0; n < len(buckets); n++ {
+			nd := time.Duration(n)
+			now := time.Now()
+			nowRounded := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), 0, 0, now.Location())
+			start := nowRounded.Add(-(nd + 1) * bucketDuration)
+			end := nowRounded.Add(-nd * bucketDuration)
+
+			for _, e := range events {
+				if e.CreatedAt.After(start) && e.CreatedAt.Before(end) {
+					buckets[n].Count += 1
+				}
+			}
+		}
+
+		maxCount := 0
+		for _, b := range buckets {
+			if b.Count > maxCount {
+				maxCount = b.Count
+			}
+		}
+
+		for i := range buckets {
+			buckets[i].Percent = int(float64(buckets[i].Count) / float64(maxCount) * 100)
+		}
+
+		reverseBuckets := make([]bucket, len(buckets))
+		for i := range buckets {
+			reverseBuckets[i] = buckets[len(buckets)-i-1]
+		}
+
 		RenderTemplate(w, "index.gohtml", map[string]interface{}{
-			"Title": "Analytics",
+			"Title":   "Analytics",
+			"Events":  events,
+			"Buckets": reverseBuckets,
 		})
 	})
 

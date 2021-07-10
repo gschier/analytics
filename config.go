@@ -1,8 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/kelseyhightower/envconfig"
 )
 
@@ -18,6 +16,6 @@ var Config config
 
 func init() {
 	envconfig.MustProcess("", &Config)
-	b, _ := json.MarshalIndent(&Config, "|  ", "  ")
-	fmt.Printf("\n\n|\n|  %s\n|\n", b)
+	// b, _ := json.MarshalIndent(&Config, "|  ", "  ")
+	// fmt.Printf("\n\n|\n|  %s\n|\n", b)
 }
