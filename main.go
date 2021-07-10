@@ -15,7 +15,6 @@ func main() {
 	fmt.Printf("\u001B[32;1m┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\u001B[0m\n")
 	fmt.Printf("\u001B[32;1m┃                  analytics                  ┃\u001B[0m\n")
 	fmt.Printf("\u001B[32;1m┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\u001B[0m\n")
-	websiteID := "site_cea0874dedc0439abbbf7fd8e5be82cb"
 
 	InitConfig()
 
@@ -24,24 +23,27 @@ func main() {
 		mustMigrate(context.Background(), db.db)
 	}
 
+	globalWebsiteID := ""
 	account, err := db.GetAccountByEmail(context.Background(), "greg@schier.co")
 	if err == sql.ErrNoRows {
 		a, _ := db.CreateAccount(context.Background(), "greg@schier.co", "my-pass!")
 		w, _ := db.CreateWebsite(context.Background(), a.ID, "My Blog")
+		globalWebsiteID = w.ID
 		println("WEBSITE:", w.ID)
 	} else if err != nil {
 		panic(err)
 	} else {
 		websites, _ := db.FindWebsitesByAccountID(context.Background(), account.ID)
-		println("WEBSITE:", websites[0].ID)
+		globalWebsiteID = websites[0].ID
 	}
+	println("WEBSITE:", globalWebsiteID)
 
 	r := mux.NewRouter()
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	r.Path("/").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		pageviews, err := db.FindAnalyticsPageviews(r.Context(), websiteID)
+		pageviews, err := db.FindAnalyticsPageviews(r.Context(), globalWebsiteID)
 		if err != nil {
 			http.Error(w, "Failed to fetch analytics pageviews", http.StatusInternalServerError)
 			return
@@ -51,14 +53,15 @@ func main() {
 		buckets := RollupPageviews(time.Now().Add(-time.Hour+time.Minute), 60, PeriodMinute, pageviews)
 
 		RenderTemplate(r, w, "index.gohtml", map[string]interface{}{
-			"Title":   "Analytics",
-			"Events":  pageviews,
-			"Buckets": buckets,
+			"Title":     "Analytics",
+			"Events":    pageviews,
+			"Buckets":   buckets,
+			"WebsiteID": globalWebsiteID,
 		})
 	})
 
 	r.Path("/events").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		events, _ := db.FindAnalyticsEvents(r.Context(), websiteID)
+		events, _ := db.FindAnalyticsEvents(r.Context(), globalWebsiteID)
 		RespondJSON(w, events)
 	})
 
