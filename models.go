@@ -39,13 +39,15 @@ type AnalyticsEvent struct {
 }
 
 type AnalyticsPageview struct {
-	ID         string    `db:"id"          json:"id"`
-	CreatedAt  time.Time `db:"created_at"  json:"createdAt"`
-	Host       string    `db:"host"        json:"host"`
-	Path       string    `db:"path"        json:"path"`
-	UserAgent  string    `db:"user_agent"  json:"userAgent"`
-	ScreenSize string    `db:"screen_size" json:"screenSize"`
-	TimeZone   string    `db:"time_zone"   json:"timeZone"`
+	ID          string    `db:"id"           json:"id"`
+	WebsiteID   string    `db:"website_id"   json:"websiteId"`
+	SID         string    `db:"sid"          json:"sid"`
+	CreatedAt   time.Time `db:"created_at"   json:"createdAt"`
+	Host        string    `db:"host"         json:"host"`
+	Path        string    `db:"path"         json:"path"`
+	UserAgent   string    `db:"user_agent"   json:"userAgent"`
+	ScreenSize  string    `db:"screen_size"  json:"screenSize"`
+	CountryCode string    `db:"country_code" json:"countryCode"`
 }
 
 // type AnalyticsEventBucket struct {
@@ -113,9 +115,13 @@ func (s *dbStore) CreateAccount(ctx context.Context, email, password string) (*A
 	return &account, nil
 }
 
-func (s *dbStore) ListAnalyticsEvents(ctx context.Context) ([]AnalyticsEvent, error) {
+func (s *dbStore) FindAnalyticsEvents(ctx context.Context, websiteID string) ([]AnalyticsEvent, error) {
 	var events []AnalyticsEvent
-	err := s.db.SelectContext(ctx, &events, `SELECT * FROM analytics_events ORDER BY created_at DESC`)
+	err := s.db.SelectContext(ctx, &events, `
+		SELECT * FROM analytics_events 
+		WHERE website_id = $1
+		ORDER BY created_at DESC
+	`, websiteID)
 	return events, err
 }
 
@@ -132,18 +138,22 @@ func (s *dbStore) CreateAnalyticsEvent(ctx context.Context, websiteID, name stri
 	return &event, nil
 }
 
-func (s *dbStore) FindAnalyticsPageviews(ctx context.Context) ([]AnalyticsPageview, error) {
+func (s *dbStore) FindAnalyticsPageviews(ctx context.Context, websiteID string) ([]AnalyticsPageview, error) {
 	var pageviews []AnalyticsPageview
-	err := s.db.SelectContext(ctx, &pageviews, `SELECT * FROM analytics_pageviews ORDER BY created_at DESC`)
+	err := s.db.SelectContext(ctx, &pageviews, `
+		SELECT * FROM analytics_pageviews 
+		WHERE website_id = $1
+		ORDER BY created_at DESC
+	`, websiteID)
 	return pageviews, err
 }
 
-func (s *dbStore) CreateAnalyticsPageview(ctx context.Context) (*AnalyticsPageview, error) {
+func (s *dbStore) CreateAnalyticsPageview(ctx context.Context, websiteID, host, path, screensize, country, sid string) (*AnalyticsPageview, error) {
 	var pageview AnalyticsPageview
 	err := s.db.QueryRowxContext(ctx, `
-		INSERT INTO analytics_pageviews DEFAULT VALUES
+		INSERT INTO analytics_pageviews (website_id, host, path, screen_size, country_code, sid) VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING *
-	`).StructScan(&pageview)
+	`, websiteID, host, path, screensize, country, sid).StructScan(&pageview)
 	if err != nil {
 		return nil, err
 	}

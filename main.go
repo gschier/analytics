@@ -15,6 +15,7 @@ func main() {
 	fmt.Printf("\u001B[32;1m┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\u001B[0m\n")
 	fmt.Printf("\u001B[32;1m┃                  analytics                  ┃\u001B[0m\n")
 	fmt.Printf("\u001B[32;1m┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\u001B[0m\n")
+	websiteID := "site_cea0874dedc0439abbbf7fd8e5be82cb"
 
 	InitConfig()
 
@@ -40,36 +41,52 @@ func main() {
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	r.Path("/").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		events, err := db.ListAnalyticsEvents(r.Context())
+		pageviews, err := db.FindAnalyticsPageviews(r.Context(), websiteID)
 		if err != nil {
-			http.Error(w, "Failed to fetch analytics events", http.StatusInternalServerError)
+			http.Error(w, "Failed to fetch analytics pageviews", http.StatusInternalServerError)
 			return
 		}
 
-		buckets := Rollup(time.Now().Add(-time.Hour/2), time.Now(), time.Minute, events)
+		// Shift one minute into the future to capture latest incomplete bucket
+		buckets := RollupPageviews(time.Now().Add(-time.Hour+time.Minute), 60, PeriodMinute, pageviews)
 
 		RenderTemplate(r, w, "index.gohtml", map[string]interface{}{
 			"Title":   "Analytics",
-			"Events":  events,
+			"Events":  pageviews,
 			"Buckets": buckets,
 		})
 	})
 
 	r.Path("/events").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		events, _ := db.ListAnalyticsEvents(r.Context())
+		events, _ := db.FindAnalyticsEvents(r.Context(), websiteID)
 		RespondJSON(w, events)
 	})
 
 	r.Path("/event").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		name := r.URL.Query().Get("name")
-		websiteID := r.URL.Query().Get("website")
-		event, err := db.CreateAnalyticsEvent(r.Context(), websiteID, name)
+		websiteID := r.URL.Query().Get("id")
+		eventName := r.URL.Query().Get("e")
+
+		_, err := db.CreateAnalyticsEvent(r.Context(), websiteID, eventName)
 		if err != nil {
 			RespondError(w, err)
 			return
 		}
+	})
 
-		RespondJSON(w, event)
+	r.Path("/page").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		site := r.URL.Query().Get("id")
+		path := r.URL.Query().Get("p")
+		host := r.URL.Query().Get("h")
+		screensize := r.URL.Query().Get("xy")
+		timezone := r.URL.Query().Get("tz")
+		countryCode := TimezoneToCountryCode[timezone]
+		sid := GenerateSID(r, site)
+
+		_, err := db.CreateAnalyticsPageview(r.Context(), site, host, path, screensize, countryCode, sid)
+		if err != nil {
+			RespondError(w, err)
+			return
+		}
 	})
 
 	fmt.Println("[schier.co] \033[32;1mStarted server on http://" + Config.Host + ":" + Config.Port + "\033[0m")

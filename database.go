@@ -98,43 +98,44 @@ var migrations = []Migration{{
 	Forward: func(ctx context.Context, db *sqlx.DB) error {
 		_, err := db.ExecContext(ctx, `
 			CREATE TABLE accounts (
-			    id              TEXT PRIMARY KEY DEFAULT CONCAT('acct_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
+			    id              VARCHAR(40)  PRIMARY KEY DEFAULT CONCAT('acct_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
 			    created_at      TIMESTAMP(3) WITH TIME ZONE DEFAULT NOW() NOT NULL,
 			    updated_at      TIMESTAMP(3) WITH TIME ZONE DEFAULT NOW() NOT NULL,
-			    email           TEXT NOT NULL UNIQUE,
-				hashed_password TEXT NOT NULL
+			    email           VARCHAR(512) NOT NULL UNIQUE,
+				hashed_password VARCHAR(256) NOT NULL
 			);
 
 			CREATE TABLE websites (
-			    id         TEXT PRIMARY KEY DEFAULT CONCAT('site_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
-			    account_id TEXT NOT NULL REFERENCES accounts(id),
+			    id         VARCHAR(40)  PRIMARY KEY DEFAULT CONCAT('site_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
+			    account_id VARCHAR(40)  NOT NULL REFERENCES accounts(id),
 			    created_at TIMESTAMP(3) WITH TIME ZONE DEFAULT NOW() NOT NULL,
 			    updated_at TIMESTAMP(3) WITH TIME ZONE DEFAULT NOW() NOT NULL,
 				domain     VARCHAR(256) NOT NULL UNIQUE
 			);
 
 			CREATE TABLE sessions (
-			    id           TEXT PRIMARY KEY DEFAULT CONCAT('sess_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
-			    account_id   TEXT NOT NULL REFERENCES accounts(id),
+			    id           VARCHAR(40) PRIMARY KEY DEFAULT CONCAT('sess_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
+			    account_id   VARCHAR(40) NOT NULL REFERENCES accounts(id),
 			    refreshed_at TIMESTAMP(3) WITH TIME ZONE DEFAULT NOW() NOT NULL,
 			    created_at   TIMESTAMP(3) WITH TIME ZONE DEFAULT NOW() NOT NULL
 			);
 
 			CREATE TABLE analytics_events (
-			    id         TEXT PRIMARY KEY DEFAULT CONCAT('ae_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
-				website_id TEXT NOT NULL REFERENCES websites(id),
+			    id         VARCHAR(40)  PRIMARY KEY DEFAULT CONCAT('ae_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
+				website_id VARCHAR(40)  NOT NULL REFERENCES websites(id),
 			    created_at TIMESTAMP(3) WITH TIME ZONE DEFAULT NOW() NOT NULL,
-			    name       VARCHAR(64) NOT NULL
+			    name       VARCHAR(64)  NOT NULL
 			);
 
 			CREATE TABLE analytics_pageviews (
-			    id         TEXT PRIMARY KEY DEFAULT CONCAT('ap_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
-				website_id TEXT NOT NULL REFERENCES websites(id),
-			    created_at TIMESTAMP(3) WITH TIME ZONE DEFAULT NOW() NOT NULL,
-				host       TEXT NOT NULL,
-				path       TEXT NOT NULL,
-				screenSize TEXT NOT NULL,
-				TimeZone   TEXT NOT NULL
+			    id           VARCHAR(40)  PRIMARY KEY DEFAULT CONCAT('ap_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
+				website_id   VARCHAR(40)  NOT NULL REFERENCES websites(id),
+			    sid          VARCHAR(64)  NOT NULL,
+			    created_at   TIMESTAMP(3) WITH TIME ZONE DEFAULT NOW() NOT NULL,
+				host         VARCHAR(512) NOT NULL,
+				path         TEXT         NOT NULL,
+				screen_size  VARCHAR(32)  NOT NULL,
+				country_code VARCHAR(2)   NOT NULL
 			);
 		`)
 

@@ -53,11 +53,11 @@
 
         --color-primary-h: 210;
         --color-primary-s: 90%;
-        --color-primary-l: 40%;
+        --color-primary-l: 50%;
 
         --color-secondary-h: 280;
         --color-secondary-s: 80%;
-        --color-secondary-l: 40%;
+        --color-secondary-l: 50%;
 
         --color-gray-100: hsl(var(--color-gray-h), var(--color-gray-s), calc(var(--color-gray-l) * 0.20));
         --color-gray-200: hsl(var(--color-gray-h), var(--color-gray-s), calc(var(--color-gray-l) * 0.40));
@@ -93,8 +93,16 @@
         --color-text: var(--color-gray-800);
       }
 
+      [data-theme="dark"] {
+        --color-bg: var(--color-gray-900);
+        --color-text: var(--color-gray-200);
+      }
+
       html {
         font-family: sans-serif;
+      }
+
+      body {
         background-color: var(--color-bg);
         color: var(--color-text);
       }
@@ -165,6 +173,7 @@
       }
 
       .button {
+        color: var(--color-primary-900);
         font-weight: 600;
         padding: var(--space-2) var(--space-3);
         border-radius: var(--space-1);
@@ -186,9 +195,9 @@
         font-size: var(--font-size-lg);
       }
     </style>
-    <script src="//{{.Host}}/static/tracker.js" data-website="site_2ad588dd233a4af7a04b17f6e1afc714"></script>
+    <script src="//{{.Host}}/static/tracker.js" data-website="site_cea0874dedc0439abbbf7fd8e5be82cb"></script>
 </head>
-<body>
+<body data-theme="dark">
 <h1 class="my-4">{{.Title}}</h1>
 <p class="my-4">This is a test page</p>
 
@@ -243,15 +252,15 @@
 <table class="border">
     <thead>
     <tr>
-        <th class="text-left p-2">Event</th>
+        <th class="text-left p-2">Path</th>
         <th class="text-left p-2">Created</th>
     </tr>
     </thead>
     <tbody>
     {{range .Events}}
         <tr>
-            <td class="text-left p-2"><strong>{{.Name}}</strong></td>
-            <td class="text-left p-2"><code>{{.CreatedAt }}</code></td>
+            <td class="text-left p-2"><strong>{{.Path}}</strong></td>
+            <td class="text-left p-2"><code>{{.CreatedAt}}</code></td>
         </tr>
     {{end}}
     </tbody>
