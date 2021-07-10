@@ -50,7 +50,7 @@ func main() {
 		for n := 0; n < len(buckets); n++ {
 			nd := time.Duration(n)
 			now := time.Now()
-			nowRounded := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), 0, 0, now.Location())
+			nowRounded := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute()+1, 0, 0, now.Location())
 			start := nowRounded.Add(-(nd + 1) * bucketDuration)
 			end := nowRounded.Add(-nd * bucketDuration)
 
