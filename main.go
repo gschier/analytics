@@ -45,7 +45,7 @@ func main() {
 	r.Path("/").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pageviews, err := db.FindAnalyticsPageviews(r.Context(), globalWebsiteID)
 		if err != nil {
-			http.Error(w, "Failed to fetch analytics pageviews", http.StatusInternalServerError)
+			RespondError(w, err)
 			return
 		}
 

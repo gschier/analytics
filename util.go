@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -16,5 +17,6 @@ func RespondJSON(w http.ResponseWriter, v interface{}) {
 
 func RespondError(w http.ResponseWriter, err error) {
 	w.Header().Set("Content-Type", "text/plain")
-	_, _ = w.Write([]byte(err.Error()))
+	log.Println("Internal error", err.Error())
+	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 }
