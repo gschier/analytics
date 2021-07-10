@@ -3,6 +3,6 @@ FROM golang
 ADD . .
 
 ENV GOPATH=""
-RUN go mod vendor
+RUN go mod vendor && go install
 
-CMD ["go", "run", "main.go"]
+CMD ["analytics"]
