@@ -29,14 +29,13 @@ func main() {
 		a, _ := db.CreateAccount(context.Background(), "greg@schier.co", "my-pass!")
 		w, _ := db.CreateWebsite(context.Background(), a.ID, "My Blog")
 		globalWebsiteID = w.ID
-		println("WEBSITE:", w.ID)
 	} else if err != nil {
 		panic(err)
 	} else {
 		websites, _ := db.FindWebsitesByAccountID(context.Background(), account.ID)
 		globalWebsiteID = websites[0].ID
 	}
-	println("WEBSITE:", globalWebsiteID)
+	fmt.Println("[main] Website", globalWebsiteID)
 
 	r := mux.NewRouter()
 
