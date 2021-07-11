@@ -15,12 +15,9 @@
   function send(path, params) {
     params.push({ name: 'id', value: website() });
     params.push({ name: 'tz', value: Intl.DateTimeFormat().resolvedOptions().timeZone });
-    params.push({
-      name: 'xy',
-      value: `${Math.round(window.innerWidth / 100) * 100}x${Math.round(window.innerHeight / 100) * 100}`,
-    });
+    params.push({ name: 'xy', value: screensize() });
     const oReq = new XMLHttpRequest();
-    oReq.open('GET', `${scriptOrigin()}${path}?${(params.map(v => `${encodeURIComponent(v.name)}=${encodeURIComponent(v.value)}`).join('&'))}`);
+    oReq.open('GET', `${scriptOrigin()}${path}?${(params.map(v => `${v.name}=${encodeURIComponent(v.value)}`).join('&'))}`);
     oReq.send();
   }
 
@@ -31,6 +28,10 @@
       _script = document.querySelector('script[data-website]');
     }
     return _script;
+  }
+
+  function screensize() {
+    return `${Math.round(window.innerWidth / 100) * 100}x${Math.round(window.innerHeight / 100) * 100}`;
   }
 
   function website() {
