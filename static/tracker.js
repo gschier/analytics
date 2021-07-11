@@ -19,8 +19,9 @@
       name: 'xy',
       value: `${Math.round(window.innerWidth / 100) * 100}x${Math.round(window.innerHeight / 100) * 100}`,
     });
-    const qs = params.map(v => `${encodeURIComponent(v.name)}=${encodeURIComponent(v.value)}`).join('&');
-    fetch(`${scriptOrigin()}${path}?${qs}`, { mode: 'no-cors' }).catch(err => console.log('Failed to send', err));
+    const oReq = new XMLHttpRequest();
+    oReq.open('GET', `${scriptOrigin()}${path}?${(params.map(v => `${encodeURIComponent(v.name)}=${encodeURIComponent(v.value)}`).join('&'))}`);
+    oReq.send();
   }
 
   let _script = null;
