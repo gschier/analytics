@@ -38,8 +38,7 @@
   }
 
   function scriptOrigin() {
-    const u = new URL(script.getAttribute("src"));
-    return u.origin;
+    return script.getAttribute("src").match(/https:\/\/[^/]*/)[0];
   }
 
   page();
