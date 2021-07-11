@@ -53,7 +53,7 @@ func main() {
 		}
 
 		// Shift one minute into the future to capture latest incomplete bucket
-		buckets := RollupPageviews(time.Now().Add(-24*time.Hour), 24, PeriodHour, pageviews)
+		buckets := RollupPageviews(time.Now().Add(-23*time.Hour), 24, PeriodHour, pageviews)
 
 		RenderTemplate(r, w, "index.gohtml", map[string]interface{}{
 			"Title":     "Analytics",
