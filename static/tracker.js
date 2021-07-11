@@ -20,7 +20,7 @@
       value: `${Math.round(window.innerWidth / 100) * 100}x${Math.round(window.innerHeight / 100) * 100}`,
     });
     const qs = params.map(v => `${encodeURIComponent(v.name)}=${encodeURIComponent(v.value)}`).join('&');
-    fetch(`${scriptOrigin()}/${path}?${qs}`).catch(err => console.log('Failed to send', err));
+    fetch(`${scriptOrigin()}${path}?${qs}`).catch(err => console.log('Failed to send', err));
   }
 
   let _script = null;
