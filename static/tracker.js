@@ -37,7 +37,7 @@
   }
 
   function scriptOrigin() {
-    return script.getAttribute('src').match(/https:\/\/[^/]*/)[0];
+    return script().getAttribute('src').match(/https:\/\/[^/]*/)[0];
   }
 
   page();
