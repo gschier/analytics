@@ -20,17 +20,26 @@
       value: `${Math.round(window.innerWidth / 100) * 100}x${Math.round(window.innerHeight / 100) * 100}`,
     });
     const qs = params.map(v => `${encodeURIComponent(v.name)}=${encodeURIComponent(v.value)}`).join('&');
-    fetch(`//${window.location.host}${path}?${qs}`).catch(err => console.log('Failed to send', err));
+    fetch(`//${scriptOrigin()}/${path}?${qs}`).catch(err => console.log('Failed to send', err));
   }
 
-  let _website = null;
+  let _script = null;
 
-  function website() {
-    if (!_website) {
-      _website = document.querySelector('script[data-website]').getAttribute('data-website');
+  function script() {
+    if (!_script) {
+      _script = document.querySelector('script[data-website]').getAttribute('data-website');
     }
 
-    return _website;
+    return _script;
+  }
+
+  function website() {
+    return script().getAttribute("data-website");
+  }
+
+  function scriptOrigin() {
+    const u = new URL(script.getAttribute("src"));
+    return u.origin;
   }
 
   page();
