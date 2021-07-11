@@ -27,18 +27,17 @@
 
   function script() {
     if (!_script) {
-      _script = document.querySelector('script[data-website]').getAttribute('data-website');
+      _script = document.querySelector('script[data-website]');
     }
-
     return _script;
   }
 
   function website() {
-    return script().getAttribute("data-website");
+    return script().getAttribute('data-website');
   }
 
   function scriptOrigin() {
-    return script.getAttribute("src").match(/https:\/\/[^/]*/)[0];
+    return script.getAttribute('src').match(/https:\/\/[^/]*/)[0];
   }
 
   page();
