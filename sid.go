@@ -1,7 +1,7 @@
 package main
 
 import (
-	"crypto/sha256"
+	"crypto/sha1"
 	"fmt"
 	"net/http"
 	"strings"
@@ -18,7 +18,7 @@ func GenerateSID(r *http.Request, siteID string) string {
 	n := time.Now()
 	dayStart := time.Date(n.Year(), n.Month(), n.Day(), 0, 0, 0, 0, n.Location())
 
-	sid := sha256.New()
+	sid := sha1.New()
 	sid.Write([]byte(Config.SessionSalt))            // Unique globally
 	sid.Write([]byte(siteID))                        // Unique per site
 	sid.Write([]byte(dayStart.Format(time.RFC3339))) // Unique per day
