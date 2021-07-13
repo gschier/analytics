@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"time"
@@ -45,144 +46,149 @@ type AnalyticsPageview struct {
 	CreatedAt   time.Time `db:"created_at"   json:"createdAt"`
 	Host        string    `db:"host"         json:"host"`
 	Path        string    `db:"path"         json:"path"`
-	UserAgent   string    `db:"user_agent"   json:"userAgent"`
 	ScreenSize  string    `db:"screen_size"  json:"screenSize"`
 	CountryCode string    `db:"country_code" json:"countryCode"`
+	UserAgent   string    `db:"user_agent"   json:"userAgent"`
 }
 
-// type AnalyticsEventBucket struct {
-// 	ID        string    `db:"id"          json:"id"`
-// 	WebsiteID string    `db:"website_id"  json:"websiteId"`
-// 	CreatedAt time.Time `db:"created_at"  json:"createdAt"`
-// 	Start     time.Time `db:"start"       json:"start"`
-// 	End       time.Time `db:"end"         json:"end"`
-// 	Name      string    `db:"name"        json:"name"`
-// }
-//
-// type AnalyticsPageviewBucket struct {
-// 	ID        string    `db:"id"          json:"id"`
-// 	WebsiteID string    `db:"website_id"  json:"websiteId"`
-// 	CreatedAt time.Time `db:"created_at"  json:"createdAt"`
-// 	Start     time.Time `db:"start"       json:"start"`
-// 	End       time.Time `db:"end"         json:"end"`
-// 	Host      string    `db:"host"        json:"host"`
-// 	Path      string    `db:"path"        json:"path"`
-// }
+type DBLike interface {
+	SelectContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
+	GetContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
+	NamedExecContext(ctx context.Context, query string, arg interface{}) (sql.Result, error)
+	ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
+}
 
-// type HLLColumn struct {
-// 	Sketch *hyperloglog.Sketch
-// }
-//
-// func (h HLLColumn) Value() (driver.Value, error) {
-// 	return h.Sketch.MarshalBinary()
-// }
-//
-// func (h HLLColumn) Scan(v interface{}) error {
-// 	sketch := hyperloglog.New()
-// 	err := sketch.UnmarshalBinary(v.([]byte))
-// 	if err != nil {
-// 		return err
-// 	}
-// 	h.Sketch = sketch
-// 	return nil
-// }
-
-func (s *dbStore) GetAccountByEmail(ctx context.Context, email string) (*Account, error) {
-	var account Account
-	err := s.db.GetContext(ctx, &account, `SELECT * FROM accounts WHERE email = $1`, email)
+func dbMany(db DBLike, ctx context.Context, dest interface{}, query string, args ...interface{}) {
+	err := db.SelectContext(ctx, dest, query, args...)
 	if err != nil {
-		return nil, err
+		panic(err)
+	}
+}
+
+func dbOne(db DBLike, ctx context.Context, dest interface{}, query string, args ...interface{}) bool {
+	err := db.GetContext(ctx, dest, query, args...)
+	if err == sql.ErrNoRows {
+		return false
+	} else if err != nil {
+		panic(err)
 	}
 
-	return &account, nil
+	return true
 }
 
-func (s *dbStore) CreateAccount(ctx context.Context, email, password string) (*Account, error) {
+func dbExec(db DBLike, ctx context.Context, query string, arg interface{}) {
+	_, err := db.NamedExecContext(ctx, query, arg)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func GetAccountByEmail(db DBLike, ctx context.Context, email string) (*Account, bool) {
+	var account Account
+	ok := dbOne(db, ctx, &account, `
+		SELECT * FROM accounts WHERE email = $1
+	`, email)
+	return &account, ok
+}
+
+func CreateAccount(db DBLike, ctx context.Context, email, password string) *Account {
 	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
-	var account Account
-	err = s.db.QueryRowxContext(ctx, `
-		INSERT INTO accounts (email, hashed_password) VALUES ($1, $2) 
-		RETURNING *
-	`, email, fmt.Sprintf("%s", hashed)).StructScan(&account)
-	if err != nil {
-		return nil, err
+	account := Account{
+		ID:             newID("acct_"),
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
+		Email:          email,
+		HashedPassword: fmt.Sprintf("%s", hashed),
 	}
 
-	return &account, nil
+	dbExec(db, ctx, `
+		INSERT INTO accounts (id, created_at, updated_at, email, hashed_password) 
+		VALUES (:id, :created_at, :updated_at, :email, :hashed_password) 
+	`, &account)
+
+	return &account
 }
 
-func (s *dbStore) FindAnalyticsEvents(ctx context.Context, websiteID string) ([]AnalyticsEvent, error) {
+func FindAnalyticsEvents(db DBLike, ctx context.Context, websiteID string) []AnalyticsEvent {
 	var events []AnalyticsEvent
-	err := s.db.SelectContext(ctx, &events, `
+	dbMany(db, ctx, &events, `
 		SELECT * FROM analytics_events 
 		WHERE website_id = $1
 		ORDER BY created_at DESC
 	`, websiteID)
-	return events, err
+	return events
 }
 
-func (s *dbStore) CreateAnalyticsEvent(ctx context.Context, websiteID, name string) (*AnalyticsEvent, error) {
-	var event AnalyticsEvent
-	err := s.db.QueryRowxContext(ctx, `
-		INSERT INTO analytics_events (website_id, name) VALUES ($1, $2)
-		RETURNING *
-	`, websiteID, name).StructScan(&event)
-	if err != nil {
-		return nil, err
+func CreateAnalyticsEvent(db DBLike, ctx context.Context, websiteID, name, sessionKey string) *AnalyticsEvent {
+	event := AnalyticsEvent{
+		ID:         newID("evnt_"),
+		WebsiteID:  websiteID,
+		CreatedAt:  time.Now(),
+		Name:       name,
+		SessionKey: sessionKey,
 	}
 
-	return &event, nil
+	dbExec(db, ctx, `
+		INSERT INTO analytics_events (id, website_id, created_at, sid, name) 
+		VALUES (:id, :website_id, :created_at, :sid, :name)
+	`, &event)
+
+	return &event
 }
 
-func (s *dbStore) FindAnalyticsPageviews(ctx context.Context, websiteID string) ([]AnalyticsPageview, error) {
+func FindAnalyticsPageviews(db DBLike, ctx context.Context, websiteID string) []AnalyticsPageview {
 	var pageviews []AnalyticsPageview
-	err := s.db.SelectContext(ctx, &pageviews, `
+	dbMany(db, ctx, &pageviews, `
 		SELECT * FROM analytics_pageviews 
 		WHERE website_id = $1
 		ORDER BY created_at DESC
 	`, websiteID)
-	return pageviews, err
+	return pageviews
 }
 
-func (s *dbStore) CreateAnalyticsPageview(ctx context.Context, websiteID, host, path, screensize, country, sid string) (*AnalyticsPageview, error) {
-	var pageview AnalyticsPageview
-	err := s.db.QueryRowxContext(ctx, `
-		INSERT INTO analytics_pageviews (website_id, host, path, screen_size, country_code, sid) VALUES ($1, $2, $3, $4, $5, $6)
-		RETURNING *
-	`, websiteID, host, path, screensize, country, sid).StructScan(&pageview)
-	if err != nil {
-		return nil, err
+func CreateAnalyticsPageview(db DBLike, ctx context.Context, websiteID, host, path, screensize, country, sid, userAgent string) *AnalyticsPageview {
+	pageview := AnalyticsPageview{
+		ID:          newID("pgvw_"),
+		CreatedAt:   time.Now(),
+		WebsiteID:   websiteID,
+		SID:         sid,
+		Host:        host,
+		Path:        path,
+		ScreenSize:  screensize,
+		CountryCode: country,
+		UserAgent:   userAgent,
 	}
-
-	return &pageview, nil
+	dbExec(db, ctx, `
+		INSERT INTO analytics_pageviews (id, website_id, sid, created_at, host, path, screen_size, country_code, user_agent) 
+		VALUES (:id, :website_id, :sid, :created_at, :host, :path, :screen_size, :country_code, :user_agent)
+	`, &pageview)
+	return &pageview
 }
 
-func (s *dbStore) CreateWebsite(ctx context.Context, accountID, name string) (*Website, error) {
-	var website Website
-	err := s.db.QueryRowxContext(ctx, `
-		INSERT INTO websites (account_id, domain) VALUES ($1, $2) 
-		RETURNING *
-	`, accountID, name).StructScan(&website)
-	if err != nil {
-		return nil, err
+func CreateWebsite(db DBLike, ctx context.Context, accountID, domain string) *Website {
+	website := Website{
+		ID:        newID("site_"),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		AccountId: accountID,
+		Domain:    domain,
 	}
-
-	return &website, nil
+	dbExec(db, ctx, `
+		INSERT INTO websites (id, account_id, created_at, updated_at, domain) 
+		VALUES (:id, :account_id, :created_at, :updated_at, :domain) 
+	`, &website)
+	return &website
 }
 
-func (s *dbStore) FindWebsitesByAccountID(ctx context.Context, accountID string) ([]Website, error) {
+func FindWebsitesByAccountID(db DBLike, ctx context.Context, accountID string) []Website {
 	var websites []Website
-	err := s.db.SelectContext(ctx, &websites, `
+	dbMany(db, ctx, &websites, `
 		SELECT * FROM websites
 		WHERE account_id = $1;
 	`, accountID)
-	if err != nil {
-		return nil, err
-	}
-
-	return websites, nil
+	return websites
 }

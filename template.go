@@ -7,7 +7,7 @@ import (
 
 var tpl *template.Template
 
-func RenderTemplate(r *http.Request, w http.ResponseWriter, name string, data map[string]interface{}) {
+func RenderTemplate(r *http.Request, w http.ResponseWriter, name, title string, data map[string]interface{}) {
 	if tpl == nil || !Config.CacheTemplates {
 		var err error
 		tpl, err = template.New("index").ParseGlob("./templates/**")
@@ -18,6 +18,7 @@ func RenderTemplate(r *http.Request, w http.ResponseWriter, name string, data ma
 	}
 
 	data["Host"] = r.Host
+	data["Title"] = title
 
 	err := tpl.ExecuteTemplate(w, name, data)
 	if err != nil {
