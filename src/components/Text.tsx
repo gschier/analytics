@@ -1,4 +1,5 @@
 import React, { HTMLAttributes } from 'react';
+import classnames from 'classnames';
 
 export type TextSize = 'sm' | 'md' | 'lg';
 
@@ -17,8 +18,17 @@ const Text: React.FC<TextProps & HTMLAttributes<HTMLHeadingElement>> = ({
     size,
     ...props
 }) => {
-    const sizeClass = sizeClassMap[size ?? 'md'];
-    return <p {...props} className={`${className ?? ''} ${sizeClass} font-normal text-gray-600`} />;
+    return (
+        <p
+            {...props}
+            className={classnames(
+                'font-normal',
+                'text-gray-600',
+                sizeClassMap[size ?? 'md'],
+                className,
+            )}
+        />
+    );
 };
 
 export default Text;

@@ -1,3 +1,4 @@
+import classnames from 'classnames';
 import React, { HTMLAttributes } from 'react';
 
 type StackSpace = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 12 | 14 | 16;
@@ -65,18 +66,20 @@ export const VStack: React.FC<StackProps & HTMLAttributes<HTMLDivElement>> = ({
     align,
     wrap,
     ...props
-}) => {
-    const spaceClass = space !== undefined ? spaces[space] : '';
-    const justifyClass = justify ? justifyValues[justify] : '';
-    const alignClass = align ? alignValues[align] : '';
-    const wrapClass = wrapValue(wrap);
-    return (
-        <div
-            {...props}
-            className={`${className ?? ''} flex flex-col ${spaceClass} ${justifyClass} ${alignClass} ${wrapClass}`}
-        />
-    );
-};
+}) => (
+    <div
+        {...props}
+        className={classnames(
+            'flex',
+            'flex-col',
+            space !== undefined ? spaces[space] : '',
+            justify ? justifyValues[justify] : '',
+            align ? alignValues[align] : '',
+            wrapValue(wrap),
+            className,
+        )}
+    />
+);
 
 export const HStack: React.FC<StackProps & HTMLAttributes<HTMLDivElement>> = ({
     className,
@@ -85,16 +88,17 @@ export const HStack: React.FC<StackProps & HTMLAttributes<HTMLDivElement>> = ({
     align,
     wrap,
     ...props
-}) => {
-    const spaceClass = space === undefined ? '' : spaces[space ?? 0];
-    const justifyClass = justifyValues[justify ?? 'start'];
-    const alignClass = alignValues[align ?? 'end'];
-    const wrapClass = wrapValue(wrap);
-    return (
-        <div
-            {...props}
-            className={`${className ?? ''} w-full flex flex-row ${spaceClass} ${justifyClass} ${alignClass} ${wrapClass}`}
-        />
-    );
-};
-
+}) => (
+    <div
+        {...props}
+        className={classnames(
+            'w-full',
+            'flex',
+            'flex-row',
+            space === undefined ? '' : spaces[space],
+            justifyValues[justify ?? 'start'],
+            alignValues[align ?? 'end'],
+            wrapValue(wrap),
+        )}
+    />
+);
