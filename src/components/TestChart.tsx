@@ -55,6 +55,8 @@ export default withTooltip<AreaProps, TooltipData>(
         if (width < 10) return null;
         if (stock.length === 0) return null;
 
+        // stock?.forEach(d => d.close = 10);
+
         // bounds
         const innerWidth = width - margin.left - margin.right;
         const innerHeight = height - margin.top - margin.bottom;
@@ -72,7 +74,7 @@ export default withTooltip<AreaProps, TooltipData>(
             () =>
                 scaleLinear({
                     range: [ innerHeight + margin.top, margin.top ],
-                    domain: [ 0, (max(stock, getStockValue) || 0) + innerHeight / 3 ],
+                    domain: [ 0, (max(stock, getStockValue) || 0) + innerHeight / 10 ],
                     nice: true,
                 }),
             [ margin.top, innerHeight ],
