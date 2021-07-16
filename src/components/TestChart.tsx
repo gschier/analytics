@@ -26,7 +26,7 @@ const tooltipStyles = {
 };
 
 // util
-const formatDate = timeFormat('%b %d, \'%y');
+const formatDate = timeFormat('%b %d');
 
 // accessors
 const getDate = (d: AppleStock) => new Date(d.date);
@@ -188,17 +188,17 @@ export default withTooltip<AreaProps, TooltipData>(
                     <div>
                         <TooltipWithBounds
                             key={Math.random()}
-                            top={tooltipTop - 12}
-                            left={tooltipLeft + 12}
+                            top={tooltipTop - 38}
+                            left={tooltipLeft + 2}
                             style={tooltipStyles}
                         >
                             {`${getStockValue(tooltipData)} views`}
                         </TooltipWithBounds>
                         <Tooltip
-                            top={innerHeight + margin.top - 14}
-                            left={tooltipLeft}
+                            top={innerHeight + margin.top - 4}
+                            left={tooltipLeft - 8}
                             style={{
-                                ...defaultStyles,
+                                ...tooltipStyles,
                                 minWidth: 72,
                                 textAlign: 'center',
                                 transform: 'translateX(-50%)',
