@@ -17,6 +17,7 @@
     params.push({ name: 'tz', value: Intl.DateTimeFormat().resolvedOptions().timeZone });
     params.push({ name: 'xy', value: screensize() });
     const oReq = new XMLHttpRequest();
+    oReq.mode = 'no-cors';
     oReq.open('GET', `${scriptOrigin()}/api${path}?${(params.map(v => `${v.name}=${encodeURIComponent(v.value)}`).join('&'))}`);
     oReq.send();
   }
