@@ -30,7 +30,7 @@ export const Table: React.FC<TableProps & HTMLAttributes<HTMLElement>> = ({
                 )}
                 <tbody>
                 {children.map((r, i) => (
-                    <TableRow key={i} className={i % 2 === 1 ? 'bg-gray-50' : 'bg-white'}>
+                    <TableRow key={i} className={i % 2 === 1 ? 'bg-gray-50' : ''}>
                         {r}
                     </TableRow>
                 ))}

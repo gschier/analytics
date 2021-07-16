@@ -84,6 +84,7 @@ const Design: React.FC = () => {
             <Subtitle>Colors</Subtitle>
             <VStack space={1}>
                 <HStack space={1}>
+                    <ColorBlock className="bg-primary-0" />
                     <ColorBlock className="bg-primary-50" />
                     <ColorBlock className="bg-primary-100" />
                     <ColorBlock className="bg-primary-200" />
@@ -96,6 +97,7 @@ const Design: React.FC = () => {
                     <ColorBlock className="bg-primary-900" />
                 </HStack>
                 <HStack space={1}>
+                    <ColorBlock className="bg-secondary-0" />
                     <ColorBlock className="bg-secondary-50" />
                     <ColorBlock className="bg-secondary-100" />
                     <ColorBlock className="bg-secondary-200" />
@@ -108,6 +110,7 @@ const Design: React.FC = () => {
                     <ColorBlock className="bg-secondary-900" />
                 </HStack>
                 <HStack space={1}>
+                    <ColorBlock className="bg-danger-0" />
                     <ColorBlock className="bg-danger-50" />
                     <ColorBlock className="bg-danger-100" />
                     <ColorBlock className="bg-danger-200" />
@@ -120,6 +123,7 @@ const Design: React.FC = () => {
                     <ColorBlock className="bg-danger-900" />
                 </HStack>
                 <HStack space={1}>
+                    <ColorBlock className="bg-gray-0" />
                     <ColorBlock className="bg-gray-50" />
                     <ColorBlock className="bg-gray-100" />
                     <ColorBlock className="bg-gray-200" />

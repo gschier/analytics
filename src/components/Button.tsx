@@ -7,22 +7,22 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
 const colorClassMap: Record<ButtonVariant, Record<ButtonColor, string>> = {
     solid: {
         primary: [
-            'text-primary-0 bg-primary-500',
+            'text-white bg-primary-500',
             'hover:bg-primary-600',
             'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-offset-0 focus-visible:ring-primary-500 focus-visible:ring-opacity-50',
         ].join(' '),
         secondary: [
-            'text-secondary-0 bg-secondary-500',
+            'text-white bg-secondary-500',
             'hover:bg-secondary-600',
             'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-offset-0 focus-visible:ring-secondary-500 focus-visible:ring-opacity-50',
         ].join(' '),
         danger: [
-            'text-danger-0 bg-danger-500',
+            'text-white bg-danger-500',
             'hover:bg-danger-600',
             'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-offset-0 focus-visible:ring-danger-500 focus-visible:ring-opacity-50',
         ].join(' '),
         gray: [
-            'text-gray-0 bg-gray-500',
+            'text-white bg-gray-500',
             'hover:bg-gray-600',
             'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-offset-0 focus-visible:ring-gray-500 focus-visible:ring-opacity-50',
         ].join(' '),
