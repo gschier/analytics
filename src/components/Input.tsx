@@ -10,7 +10,7 @@ const sizeClassMap: Record<InputSize, string> = {
 };
 
 export interface InputProps {
-    type?: 'text' | 'number' | 'email' | 'url';
+    type?: 'text' | 'number' | 'email' | 'url' | 'password';
     size?: InputSize;
     label?: ReactNode;
     textarea?: boolean;
@@ -28,12 +28,10 @@ const Input: React.FC<InputProps & HTMLAttributes<HTMLInputElement | HTMLTextAre
     ...props
 }) => {
     const sizeClass = sizeClassMap[size ?? 'md'];
-    const errorClass = error && [
-        '!ring-danger-500 !focus:ring-danger-500 text-danger-800',
-    ].join(' ');
+    const errorClass = error && '!ring-danger-400 !focus:ring-danger-400 text-danger-800 text-opacity-80';
     const baseClass = [
         'bg-gray-0 rounded py-1.5 px-3 ring-1 ring-gray-200 placeholder-gray-300 w-full',
-        'focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-500',
+        'focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-400',
     ].join(' ');
 
     return (

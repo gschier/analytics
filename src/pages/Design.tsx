@@ -1,4 +1,4 @@
-import React, { HTMLAttributes, useState } from 'react';
+import React, { HTMLAttributes } from 'react';
 import { HStack, VStack } from '../components/Stacks';
 import Title from '../components/Title';
 import Text from '../components/Text';
@@ -7,12 +7,14 @@ import Subtitle from '../components/Subtitle';
 import { Helmet } from 'react-helmet';
 import { capitalize } from '../util/text';
 import Input from '../components/Input';
-import { Table, TableCell, TableRow } from '../components/Table';
+import { Table, TableRow } from '../components/Table';
 import ParentSize from '@visx/responsive/lib/components/ParentSize';
 import TestChart from '../components/TestChart';
+import Card from '../components/Card';
+import useStateLocalStorage from '../hooks/use-state-localstorage';
 
 const Design: React.FC = () => {
-    const [ theme, setTheme ] = useState<'dark' | 'light'>('light');
+    const [ theme, setTheme ] = useStateLocalStorage<'dark' | 'light'>('theme', 'light');
     const colors: ButtonColor[] = [ 'primary', 'secondary', 'danger', 'gray' ];
     const buttonVariants: ButtonVariant[] = [ 'solid', 'outline' ];
     const buttonSizes: ButtonSize[] = [ 'lg', 'md', 'sm' ];
@@ -30,29 +32,54 @@ const Design: React.FC = () => {
             </HStack>
             <Text>This is the design system for the analytics tool.</Text>
 
+            <Subtitle>Cards</Subtitle>
+            <HStack wrap space={3} align="start">
+                <Card title="Example Card" className="max-w-sm">
+                    <Input placeholder="Email" />
+                    <Input type="password" placeholder="Password" />
+                    <Button className="w-full">Submit</Button>
+                </Card>
+                <Card title="Example Card" className="max-w-xs">
+                    <div className="w-full h-32">
+                        <ParentSize>{({ width, height }) =>
+                            <TestChart width={width} height={height} />
+                        }</ParentSize>
+                    </div>
+                </Card>
+                <Card title="Example Card" className="max-w-xs">
+                    <Text>
+                        Hello, this is some text within an example card. It's long enough to showcase how text may wrap
+                        inside a card but the text itself is not interesting at all.
+                    </Text>
+                </Card>
+            </HStack>
+
             <Subtitle>Tables</Subtitle>
             <VStack space={2}>
-
-                <Table columns={[ 'Name', 'Description' ]}>{[ [
-                    <Text>Jane Cooper</Text>,
-                    <Text>Regional Paradigm Technician</Text>,
-                ], [
-                    <Text>Cody Fisher</Text>,
-                    <Text>Product Directives Officer</Text>,
-                ], [
-                    <Text>Esther Howard</Text>,
-                    <Text>Forward Response Developer</Text>,
-                ] ]}</Table>
+                <Table columns={[ 'Name', 'Description' ]}>
+                    <TableRow>
+                        <Text>Jane Cooper</Text>
+                        <Text>Regional Paradigm Technician</Text>
+                    </TableRow>
+                    <TableRow>
+                        <Text>Cody Fisher</Text>
+                        <Text>Product Directives Officer</Text>
+                    </TableRow>
+                    <TableRow>
+                        <Text>Esther Howard</Text>
+                        <Text>Forward Response Developer</Text>
+                    </TableRow>
+                </Table>
             </VStack>
 
             <Subtitle>Charts</Subtitle>
             <HStack space={2}>
-                <div className="w-full h-32">
+                <div className="w-1/3 h-32">
                     <ParentSize>{({ width, height }) =>
                         <TestChart width={width} height={height} />
                     }</ParentSize>
                 </div>
-                <div className="w-1/2 h-32">
+                <div className="w-2/3 h-32">
                     <ParentSize>{({ width, height }) =>
                         <TestChart width={width} height={height} />
                     }</ParentSize>

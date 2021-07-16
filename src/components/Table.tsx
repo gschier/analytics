@@ -1,8 +1,8 @@
 import Text from './Text';
-import React, { Children, HTMLAttributes, ReactNode, useMemo } from 'react';
+import React, { HTMLAttributes, ReactNode } from 'react';
 
 export interface TableProps {
-    children: (ReactNode[])[];
+    children: ReactNode;
     columns?: string[];
 }
 
@@ -28,13 +28,7 @@ export const Table: React.FC<TableProps & HTMLAttributes<HTMLElement>> = ({
                     </tr>
                     </thead>
                 )}
-                <tbody>
-                {children.map((r, i) => (
-                    <TableRow key={i} className={i % 2 === 1 ? 'bg-gray-50' : ''}>
-                        {r}
-                    </TableRow>
-                ))}
-                </tbody>
+                <tbody>{children}</tbody>
             </table>
         </div>
     );
@@ -46,20 +40,11 @@ export const TableRow: React.FC<{ children: ReactNode[] } & HTMLAttributes<HTMLE
 }) => {
     return (
         <tr {...props}>
-            {React.Children.map(children, ((td, i) => (
+            {React.Children.map(children, ((contents, i) => (
                 <td key={i} className={`${cellClass} text-gray-700`}>
-                    {td}
+                    {contents}
                 </td>
             )))}
         </tr>
-    );
-};
-
-export const TableCell: React.FC<HTMLAttributes<HTMLTableDataCellElement>> = ({
-    className,
-    ...props
-}) => {
-    return (
-        <td {...props} className={`${className ?? ''} ${cellClass} text-gray-700`} />
     );
 };

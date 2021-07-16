@@ -1,21 +1,21 @@
-import React, { useMemo, useCallback } from 'react';
-import { AreaClosed, Line, Bar } from '@visx/shape';
+import React, { useCallback, useMemo } from 'react';
+import { AreaClosed, Bar, Line } from '@visx/shape';
 import appleStock, { AppleStock } from '@visx/mock-data/lib/mocks/appleStock';
 import { curveMonotoneX } from '@visx/curve';
-import { GridRows, GridColumns } from '@visx/grid';
-import { scaleTime, scaleLinear } from '@visx/scale';
-import { withTooltip, Tooltip, TooltipWithBounds, defaultStyles } from '@visx/tooltip';
+import { GridColumns, GridRows } from '@visx/grid';
+import { scaleLinear, scaleTime } from '@visx/scale';
+import { defaultStyles, Tooltip, TooltipWithBounds, withTooltip } from '@visx/tooltip';
 import { WithTooltipProvidedProps } from '@visx/tooltip/lib/enhancers/withTooltip';
 import { localPoint } from '@visx/event';
 import { LinearGradient } from '@visx/gradient';
-import { max, extent, bisector } from 'd3-array';
+import { bisector, extent, max } from 'd3-array';
 import { timeFormat } from 'd3-time-format';
 
 type TooltipData = AppleStock;
 
 const stock = appleStock.slice(800);
 export const background = 'hsl(var(--color-primary-50))';
-export const background2 = 'hsl(var(--color-primary-100))';
+export const background2 = 'hsl(var(--color-primary-50))';
 export const accentColor = 'hsl(var(--color-primary-500))';
 export const accentColor2 = 'hsl(var(--color-primary-400))';
 export const accentColorDark = 'hsl(var(--color-primary-50))';
