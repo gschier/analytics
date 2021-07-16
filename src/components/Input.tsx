@@ -51,42 +51,38 @@ const Input: React.FC<
     );
 
     return (
-        <VStack className={className}>
+        <VStack className={className} space={1}>
             {label && (
                 <label
                     htmlFor={id}
-                    className="font-semibold text-gray-500 text-sm mb-1">
+                    className="font-semibold text-gray-500 text-sm">
                     {label}
                 </label>
             )}
-            <div>
-                {textarea ? (
-                    <textarea
-                        {...props}
-                        style={{ touchAction: 'manipulation' }}
-                        id={id}
-                        name={name}
-                        className={classnames(
-                            baseClass,
-                            sizeClass,
-                            errorClass,
-                            'h-16',
-                        )}
-                    />
-                ) : (
-                    <input
-                        {...props}
-                        style={{ touchAction: 'manipulation' }}
-                        id={id}
-                        name={name}
-                        type={type}
-                        className={classnames(baseClass, sizeClass, errorClass)}
-                    />
-                )}
-            </div>
-            {error && (
-                <div className="text-danger-500 text-sm mt-1">{error}</div>
+            {textarea ? (
+                <textarea
+                    {...props}
+                    style={{ touchAction: 'manipulation' }}
+                    id={id}
+                    name={name}
+                    className={classnames(
+                        baseClass,
+                        sizeClass,
+                        errorClass,
+                        'h-16',
+                    )}
+                />
+            ) : (
+                <input
+                    {...props}
+                    style={{ touchAction: 'manipulation' }}
+                    id={id}
+                    name={name}
+                    type={type}
+                    className={classnames(baseClass, sizeClass, errorClass)}
+                />
             )}
+            {error && <div className="text-danger-500 text-sm">{error}</div>}
         </VStack>
     );
 };
