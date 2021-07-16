@@ -35,8 +35,8 @@ const Design: React.FC = () => {
             <Subtitle>Cards</Subtitle>
             <HStack wrap space={3} align="start">
                 <Card title="Example Card" className="max-w-sm">
-                    <Input placeholder="Email" />
-                    <Input type="password" placeholder="Password" />
+                    <Input name="email" placeholder="Email" />
+                    <Input name="password" type="password" placeholder="Password" />
                     <Button className="w-full">Submit</Button>
                 </Card>
                 <Card title="Example Card" className="w-1/3">

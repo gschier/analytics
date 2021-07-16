@@ -1,4 +1,4 @@
-const colorVariants = ['primary', 'secondary', 'danger', 'gray'];
+const colorVariants = ['primary', 'secondary', 'accent', 'danger', 'gray'];
 
 const backgroundColors = {};
 for (const c of colorVariants) {

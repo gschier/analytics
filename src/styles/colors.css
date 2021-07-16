@@ -1,7 +1,7 @@
 :root {
   --color-gray-hue: var(--color-primary-hue);
-  --color-gray-sat: calc(var(--color-primary-sat) * 0.2);
-  --color-gray-lgt: calc(var(--color-primary-lgt) * 0.8);
+  --color-gray-sat: calc(var(--color-primary-sat) * 0.3);
+  --color-gray-lgt: calc(var(--color-primary-lgt) * 1);
 }
 
 :root:not(.dark) {
@@ -28,6 +28,18 @@
   --color-secondary-700: var(--color-secondary-hue), var(--color-secondary-sat), calc(var(--color-secondary-lgt) - var(--color-secondary-lgt) * 0.4);
   --color-secondary-800: var(--color-secondary-hue), var(--color-secondary-sat), calc(var(--color-secondary-lgt) - var(--color-secondary-lgt) * 0.6);
   --color-secondary-900: var(--color-secondary-hue), var(--color-secondary-sat), calc(var(--color-secondary-lgt) - var(--color-secondary-lgt) * 0.8);
+
+  --color-accent-0: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) + (100% - var(--color-accent-lgt)) * 0.98);
+  --color-accent-50: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) + (100% - var(--color-accent-lgt)) * 0.9);
+  --color-accent-100: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) + (100% - var(--color-accent-lgt)) * 0.8);
+  --color-accent-200: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) + (100% - var(--color-accent-lgt)) * 0.6);
+  --color-accent-300: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) + (100% - var(--color-accent-lgt)) * 0.4);
+  --color-accent-400: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) + (100% - var(--color-accent-lgt)) * 0.2);
+  --color-accent-500: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) + (100% - var(--color-accent-lgt)) * 0.0);
+  --color-accent-600: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) - var(--color-accent-lgt) * 0.2);
+  --color-accent-700: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) - var(--color-accent-lgt) * 0.4);
+  --color-accent-800: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) - var(--color-accent-lgt) * 0.6);
+  --color-accent-900: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) - var(--color-accent-lgt) * 0.8);
 
   --color-danger-0: var(--color-danger-hue), var(--color-danger-sat), calc(var(--color-danger-lgt) + (100% - var(--color-danger-lgt)) * 0.98);
   --color-danger-50: var(--color-danger-hue), var(--color-danger-sat), calc(var(--color-danger-lgt) + (100% - var(--color-danger-lgt)) * 0.9);
@@ -79,6 +91,18 @@
   --color-secondary-50: var(--color-secondary-hue), var(--color-secondary-sat), calc(var(--color-secondary-lgt) - var(--color-secondary-lgt) * 0.8);
   --color-secondary-0: var(--color-secondary-hue), var(--color-secondary-sat), calc(var(--color-secondary-lgt) - var(--color-secondary-lgt) * 0.9);
 
+  --color-accent-900: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) + (100% - var(--color-accent-lgt)) * 0.8);
+  --color-accent-800: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) + (100% - var(--color-accent-lgt)) * 0.6);
+  --color-accent-700: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) + (100% - var(--color-accent-lgt)) * 0.4);
+  --color-accent-600: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) + (100% - var(--color-accent-lgt)) * 0.2);
+  --color-accent-500: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) + (100% - var(--color-accent-lgt)) * 0.0);
+  --color-accent-400: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) - var(--color-accent-lgt) * 0.2);
+  --color-accent-300: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) - var(--color-accent-lgt) * 0.4);
+  --color-accent-200: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) - var(--color-accent-lgt) * 0.55);
+  --color-accent-100: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) - var(--color-accent-lgt) * 0.65);
+  --color-accent-50: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) - var(--color-accent-lgt) * 0.8);
+  --color-accent-0: var(--color-accent-hue), var(--color-accent-sat), calc(var(--color-accent-lgt) - var(--color-accent-lgt) * 0.9);
+
   --color-danger-900: var(--color-danger-hue), var(--color-danger-sat), calc(var(--color-danger-lgt) + (100% - var(--color-danger-lgt)) * 0.8);
   --color-danger-800: var(--color-danger-hue), var(--color-danger-sat), calc(var(--color-danger-lgt) + (100% - var(--color-danger-lgt)) * 0.6);
   --color-danger-700: var(--color-danger-hue), var(--color-danger-sat), calc(var(--color-danger-lgt) + (100% - var(--color-danger-lgt)) * 0.4);
@@ -101,5 +125,5 @@
   --color-gray-200: var(--color-gray-hue), var(--color-gray-sat), calc(var(--color-gray-lgt) - var(--color-gray-lgt) * 0.3);
   --color-gray-100: var(--color-gray-hue), var(--color-gray-sat), calc(var(--color-gray-lgt) - var(--color-gray-lgt) * 0.5);
   --color-gray-50: var(--color-gray-hue), var(--color-gray-sat), calc(var(--color-gray-lgt) - var(--color-gray-lgt) * 0.8);
-  --color-gray-0: var(--color-gray-hue), var(--color-gray-sat), calc(var(--color-gray-lgt) - var(--color-gray-lgt) * 0.95);
+  --color-gray-0: var(--color-gray-hue), var(--color-gray-sat), calc(var(--color-gray-lgt) - var(--color-gray-lgt) * 0.9);
 }
