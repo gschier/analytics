@@ -38,7 +38,10 @@ func SetupRouter() http.Handler {
 		CreateAnalyticsPageview(GetDB(), r.Context(), site, host, path, screensize, countryCode, sid, userAgent)
 	})
 
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./dist")))
+	r.PathPrefix("/assets").Handler(http.FileServer(http.Dir("./dist")))
+	r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./dist/index.html")
+	})
 
 	return r
 }
