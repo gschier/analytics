@@ -99,6 +99,7 @@ export const HStack: React.FC<StackProps & HTMLAttributes<HTMLDivElement>> = ({
             justifyValues[justify ?? 'start'],
             alignValues[align ?? 'end'],
             wrapValue(wrap),
+            className,
         )}
     />
 );
