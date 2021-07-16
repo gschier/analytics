@@ -39,7 +39,7 @@ const Design: React.FC = () => {
                     <Input type="password" placeholder="Password" />
                     <Button className="w-full">Submit</Button>
                 </Card>
-                <Card title="Example Card" className="max-w-xs">
+                <Card title="Example Card" className="w-1/3">
                     <div className="w-full h-32">
                         <ParentSize>{({ width, height }) =>
                             <TestChart width={width} height={height} />
