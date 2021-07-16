@@ -55,7 +55,6 @@ export default withTooltip<AreaProps, TooltipData>(
         if (width < 10) return null;
         if (stock.length === 0) return null;
 
-        console.log('stock', stock);
         // bounds
         const innerWidth = width - margin.left - margin.right;
         const innerHeight = height - margin.top - margin.bottom;
@@ -193,7 +192,7 @@ export default withTooltip<AreaProps, TooltipData>(
                             left={tooltipLeft + 12}
                             style={tooltipStyles}
                         >
-                            {`$${getStockValue(tooltipData)}`}
+                            {`${getStockValue(tooltipData)}`}
                         </TooltipWithBounds>
                         <Tooltip
                             top={innerHeight + margin.top - 14}

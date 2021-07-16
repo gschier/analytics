@@ -15,7 +15,7 @@ func SetupRouter() http.Handler {
 
 	r.Path("/api/pageviews").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pageviews := FindAnalyticsPageviews(GetDB(), r.Context(), ensureDummyWebsite())
-		rollups := RollupPageviews(time.Now().Add(-24*7*time.Hour), 24*7, PeriodHour, pageviews)
+		rollups := RollupPageviews(time.Now().Add(-24*time.Hour), 24, PeriodHour, pageviews)
 		RespondJSON(w, &rollups)
 	})
 
