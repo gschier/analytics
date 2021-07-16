@@ -9,7 +9,6 @@ type config struct {
 	Host           string `envconfig:"HOST" default:"localhost"`
 	DatabaseURL    string `envconfig:"DATABASE_URL" required:"true"`
 	MigrateOnStart bool   `envconfig:"MIGRATE_ON_START" default:"false"`
-	CacheTemplates bool   `envconfig:"CACHE_TEMPLATES" default:"false"`
 	SessionSalt    string `envconfig:"SESSION_SALT" required:"true"`
 }
 

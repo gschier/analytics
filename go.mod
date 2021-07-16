@@ -1,4 +1,4 @@
-module analytics
+module github.com/gschier/analytics
 
 go 1.16
 

@@ -1,0 +1,13 @@
+:root {
+  --color-primary-hue: 225;
+  --color-primary-sat: 80%;
+  --color-primary-lgt: 60%;
+
+  --color-secondary-hue: 265;
+  --color-secondary-sat: 80%;
+  --color-secondary-lgt: 60%;
+
+  --color-danger-hue: 0;
+  --color-danger-sat: 80%;
+  --color-danger-lgt: 60%;
+}

@@ -19,7 +19,10 @@ func main() {
 		mustMigrate(context.Background(), GetDB())
 	}
 
-	h := SetupRouter(ensureDummyWebsite())
+	websiteID := ensureDummyWebsite()
+	fmt.Println("[main] Website", websiteID)
+
+	h := SetupRouter()
 	fmt.Printf("[schier.co] \033[32;1mStarted server on http://%s:%s\033[0m", Config.Host, Config.Port)
 	log.Fatal(http.ListenAndServe(Config.Host+":"+Config.Port, h))
 }
@@ -27,16 +30,13 @@ func main() {
 func ensureDummyWebsite() string {
 	account, accountExists := GetAccountByEmail(GetDB(), context.Background(), "greg@schier.co")
 
-	globalWebsiteID := ""
 	if accountExists {
 		websites := FindWebsitesByAccountID(GetDB(), context.Background(), account.ID)
-		globalWebsiteID = websites[0].ID
-	} else {
-		a := CreateAccount(GetDB(), context.Background(), "greg@schier.co", "my-pass!")
-		w := CreateWebsite(GetDB(), context.Background(), a.ID, "My Blog")
-		globalWebsiteID = w.ID
+		return websites[0].ID
 	}
 
-	fmt.Println("[main] Website", globalWebsiteID)
-	return globalWebsiteID
+	a := CreateAccount(GetDB(), context.Background(), "greg@schier.co", "my-pass!")
+	w := CreateWebsite(GetDB(), context.Background(), a.ID, "My Blog")
+
+	return w.ID
 }

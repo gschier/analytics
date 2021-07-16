@@ -1,0 +1,9 @@
+@import "./tailwind.css";
+@import "./theme.css";
+@import "./colors.css";
+
+
+html {
+  background-color: hsl(var(--color-gray-0));
+  color: hsl(var(--color-gray-800));
+}

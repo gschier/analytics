@@ -34,6 +34,7 @@ type Website struct {
 type AnalyticsEvent struct {
 	ID         string    `db:"id"          json:"id"`
 	WebsiteID  string    `db:"website_id"  json:"websiteId"`
+	SID        string    `db:"sid"         json:"sid"`
 	CreatedAt  time.Time `db:"created_at"  json:"createdAt"`
 	SessionKey string    `db:"session_key" json:"sessionKey"`
 	Name       string    `db:"name"        json:"name"`
@@ -106,8 +107,8 @@ func CreateAccount(db DBLike, ctx context.Context, email, password string) *Acco
 	}
 
 	dbExec(db, ctx, `
-		INSERT INTO accounts (id, created_at, updated_at, email, hashed_password) 
-		VALUES (:id, :created_at, :updated_at, :email, :hashed_password) 
+		INSERT INTO accounts (id, created_at, updated_at, email, hashed_password)
+		VALUES (:id, :created_at, :updated_at, :email, :hashed_password)
 	`, &account)
 
 	return &account
