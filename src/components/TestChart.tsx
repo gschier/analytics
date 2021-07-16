@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { AreaClosed, Bar, Line } from '@visx/shape';
-import { AppleStock } from '@visx/mock-data/lib/mocks/appleStock';
+import appleStock, { AppleStock } from '@visx/mock-data/lib/mocks/appleStock';
 import { curveMonotoneX } from '@visx/curve';
 import { GridColumns, GridRows } from '@visx/grid';
 import { scaleLinear, scaleTime } from '@visx/scale';
@@ -10,7 +10,6 @@ import { localPoint } from '@visx/event';
 import { LinearGradient } from '@visx/gradient';
 import { bisector, extent, max } from 'd3-array';
 import { timeFormat } from 'd3-time-format';
-import { appleStock } from '@visx/mock-data';
 
 type TooltipData = AppleStock;
 
@@ -54,7 +53,9 @@ export default withTooltip<AreaProps, TooltipData>(
         data: stock = appleStock.slice(800),
     }: AreaProps & WithTooltipProvidedProps<TooltipData>) => {
         if (width < 10) return null;
+        if (stock.length === 0) return null;
 
+        console.log('stock', stock);
         // bounds
         const innerWidth = width - margin.left - margin.right;
         const innerHeight = height - margin.top - margin.bottom;
@@ -107,27 +108,27 @@ export default withTooltip<AreaProps, TooltipData>(
                         y={0}
                         width={width}
                         height={height}
-                        fill='url(#area-background-gradient)'
+                        fill="url(#area-background-gradient)"
                     />
-                    <LinearGradient id='area-background-gradient' from={background} to={background2} />
-                    <LinearGradient id='area-gradient' from={accentColor} to={accentColor2}  />
+                    <LinearGradient id="area-background-gradient" from={background} to={background2} />
+                    <LinearGradient id="area-gradient" from={accentColor} to={accentColor2} />
                     <GridRows
                         left={margin.left}
                         scale={stockValueScale}
                         width={innerWidth}
-                        strokeDasharray='1,3'
+                        strokeDasharray="1,3"
                         stroke={accentColor}
                         strokeOpacity={0}
-                        pointerEvents='none'
+                        pointerEvents="none"
                     />
                     <GridColumns
                         top={margin.top}
                         scale={dateScale}
                         height={innerHeight}
-                        strokeDasharray='1,3'
+                        strokeDasharray="1,3"
                         stroke={accentColor}
                         strokeOpacity={0.2}
-                        pointerEvents='none'
+                        pointerEvents="none"
                     />
                     <AreaClosed<AppleStock>
                         data={stock}
@@ -135,8 +136,8 @@ export default withTooltip<AreaProps, TooltipData>(
                         y={d => stockValueScale(getStockValue(d)) ?? 0}
                         yScale={stockValueScale}
                         strokeWidth={1}
-                        stroke='url(#area-gradient)'
-                        fill='url(#area-gradient)'
+                        stroke="url(#area-gradient)"
+                        fill="url(#area-gradient)"
                         curve={curveMonotoneX}
                     />
                     <Bar
@@ -144,7 +145,7 @@ export default withTooltip<AreaProps, TooltipData>(
                         y={margin.top}
                         width={innerWidth}
                         height={innerHeight}
-                        fill='transparent'
+                        fill="transparent"
                         rx={14}
                         onTouchStart={handleTooltip}
                         onTouchMove={handleTooltip}
@@ -158,28 +159,28 @@ export default withTooltip<AreaProps, TooltipData>(
                                 to={{ x: tooltipLeft, y: innerHeight + margin.top }}
                                 stroke={accentColorDark}
                                 strokeWidth={2}
-                                pointerEvents='none'
-                                strokeDasharray='5,2'
+                                pointerEvents="none"
+                                strokeDasharray="5,2"
                             />
                             <circle
                                 cx={tooltipLeft}
                                 cy={tooltipTop + 1}
                                 r={4}
-                                fill='black'
+                                fill="black"
                                 fillOpacity={0.1}
-                                stroke='black'
+                                stroke="black"
                                 strokeOpacity={0.1}
                                 strokeWidth={2}
-                                pointerEvents='none'
+                                pointerEvents="none"
                             />
                             <circle
                                 cx={tooltipLeft}
                                 cy={tooltipTop}
                                 r={4}
                                 fill={accentColorDark}
-                                stroke='white'
+                                stroke="white"
                                 strokeWidth={2}
-                                pointerEvents='none'
+                                pointerEvents="none"
                             />
                         </g>
                     )}
