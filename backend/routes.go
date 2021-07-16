@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gorilla/mux"
 	"net/http"
+	"time"
 )
 
 func SetupRouter() http.Handler {
@@ -10,6 +11,12 @@ func SetupRouter() http.Handler {
 
 	r.Path("/script.js").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./dist/tracker.js")
+	})
+
+	r.Path("/api/pageviews").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		pageviews := FindAnalyticsPageviews(GetDB(), r.Context(), ensureDummyWebsite())
+		rollups := RollupPageviews(time.Now().Add(-24*time.Hour), 24, PeriodHour, pageviews)
+		RespondJSON(w, &rollups)
 	})
 
 	r.Path("/api/event").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

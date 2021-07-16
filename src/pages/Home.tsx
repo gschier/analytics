@@ -1,29 +1,31 @@
-import React, { useState } from 'react';
-import { HStack, VStack } from '../components/Stacks';
+import React, { useEffect, useState } from 'react';
+import { VStack } from '../components/Stacks';
 import Title from '../components/Title';
 import ParentSize from '@visx/responsive/lib/components/ParentSize';
 import TestChart from '../components/TestChart';
-import Button from '../components/Button';
 
 const Home: React.FC = () => {
-    const [ count, setCount ] = useState<number>(0);
+    const [ pageviews, setPageviews ] = useState<any[]>([]);
+    useEffect(() => {
+        fetch('/api/pageviews').then(async res => {
+            const data = await res.json();
+            setPageviews(data);
+        }, err => {
+            console.log('ERROR', err.message);
+        });
+    }, []);
 
     return (
         <VStack space={3} className="m-4">
-            <Title>Counter Example</Title>
+            <Title>Analytics</Title>
             <div className="w-full h-64">
                 <ParentSize>{({ width, height }) =>
-                    <TestChart width={width} height={height} />
+                    <TestChart width={width} height={height} data={pageviews.map(pv => ({
+                        date: pv.Start,
+                        close: pv.Count,
+                    }))} />
                 }</ParentSize>
             </div>
-            <HStack space={2}>
-                <Button onClick={() => setCount(count + 1)}>
-                    Count {count}
-                </Button>
-                <Button onClick={() => setCount(count + 1)} variant="outline" color="secondary">
-                    Count {count}
-                </Button>
-            </HStack>
         </VStack>
     );
 };

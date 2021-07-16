@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { AreaClosed, Bar, Line } from '@visx/shape';
-import appleStock, { AppleStock } from '@visx/mock-data/lib/mocks/appleStock';
+import { AppleStock } from '@visx/mock-data/lib/mocks/appleStock';
 import { curveMonotoneX } from '@visx/curve';
 import { GridColumns, GridRows } from '@visx/grid';
 import { scaleLinear, scaleTime } from '@visx/scale';
@@ -13,7 +13,6 @@ import { timeFormat } from 'd3-time-format';
 
 type TooltipData = AppleStock;
 
-const stock = appleStock.slice(800);
 export const background = 'hsl(var(--color-primary-50))';
 export const background2 = 'hsl(var(--color-primary-50))';
 export const accentColor = 'hsl(var(--color-primary-500))';
@@ -38,6 +37,7 @@ export type AreaProps = {
     width: number;
     height: number;
     margin?: { top: number; right: number; bottom: number; left: number };
+    data: AppleStock[],
 };
 
 export default withTooltip<AreaProps, TooltipData>(
@@ -50,6 +50,7 @@ export default withTooltip<AreaProps, TooltipData>(
         tooltipData,
         tooltipTop = 0,
         tooltipLeft = 0,
+        data: stock,
     }: AreaProps & WithTooltipProvidedProps<TooltipData>) => {
         if (width < 10) return null;
 

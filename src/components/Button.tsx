@@ -76,7 +76,8 @@ const Button: React.FC<ButtonProps & HTMLAttributes<HTMLButtonElement>> = ({
     return (
         <button
             {...props}
-            className={`${className ?? ''} ${baseClass} ${colorClass} ${sizeClass}`} />
+            className={`${className ?? ''} ${baseClass} ${colorClass} ${sizeClass}`}
+        />
     );
 };
 
