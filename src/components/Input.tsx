@@ -36,7 +36,7 @@ const Input: React.FC<InputProps & HTMLAttributes<HTMLInputElement | HTMLTextAre
 
     return (
         <VStack className={className}>
-            {label && <label className="font-semibold text-gray-400 text-sm mb-1">{label}</label>}
+            {label && <label className="font-semibold text-gray-500 text-sm mb-1">{label}</label>}
             {textarea ? (
                 <textarea {...props} className={`${baseClass} ${sizeClass} ${errorClass} h-16`} />
             ) : (
