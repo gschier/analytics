@@ -1,5 +1,6 @@
 import React, { HTMLAttributes } from 'react';
 import classnames from 'classnames';
+import Icon, { IconChoice } from './Icon';
 
 export type ButtonColor = 'primary' | 'secondary' | 'danger' | 'gray';
 export type ButtonVariant = 'solid' | 'outline';
@@ -117,40 +118,54 @@ const colorClassMap: Record<ButtonVariant, Record<ButtonColor, string>> = {
 };
 
 const sizeClassMap: Record<ButtonSize, string> = {
-    sm: classnames('text-xs', 'px-3'),
-    md: classnames('text-sm', 'px-3.5'),
-    lg: classnames('text-md', 'px-4'),
+    sm: classnames('text-xs', 'px-2.5'),
+    md: classnames('text-sm', 'px-3'),
+    lg: classnames('text-md', 'px-3.5'),
 };
 
 export interface ButtonProps {
     color?: ButtonColor;
     variant?: ButtonVariant;
     size?: ButtonSize;
+    icon?: IconChoice;
 }
 
 const Button: React.FC<ButtonProps & HTMLAttributes<HTMLButtonElement>> = ({
     className,
+    children,
     variant,
     color,
     size,
+    icon,
     ...props
 }) => {
     return (
         <button
             {...props}
             className={classnames(
-                'rounded',
+                'rounded-md',
                 'py-1.5',
                 'font-medium',
                 'transform',
                 'active:scale-95',
                 'transition-transform',
                 'duration-75',
+                'flex',
+                'items-center',
+                'justify-center',
                 colorClassMap[variant ?? 'solid'][color ?? 'primary'],
                 sizeClassMap[size ?? 'md'],
                 className,
+            )}>
+            {icon && (
+                <Icon
+                    icon={icon}
+                    className={classnames({ 'mr-1': children })}
+                    size="sm"
+                />
             )}
-        />
+            {children}
+        </button>
     );
 };
 
