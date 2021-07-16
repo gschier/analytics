@@ -31,6 +31,7 @@ const Input: React.FC<
         classnames(
             '!ring-danger-400',
             '!focus:ring-danger-400',
+            '!border-danger-400',
             'text-danger-800',
             'text-opacity-80',
         );
