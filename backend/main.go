@@ -23,7 +23,7 @@ func main() {
 	fmt.Println("[main] Website", websiteID)
 
 	h := SetupRouter()
-	fmt.Printf("[schier.co] \033[32;1mStarted server on http://%s:%s\033[0m", Config.Host, Config.Port)
+	fmt.Printf("[schier.co] \033[32;1mStarted server on http://%s:%s\033[0m\n", Config.Host, Config.Port)
 	log.Fatal(http.ListenAndServe(Config.Host+":"+Config.Port, h))
 }
 
