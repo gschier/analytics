@@ -10,6 +10,7 @@ import { localPoint } from '@visx/event';
 import { LinearGradient } from '@visx/gradient';
 import { bisector, extent, max } from 'd3-array';
 import { timeFormat } from 'd3-time-format';
+import { appleStock } from '@visx/mock-data';
 
 type TooltipData = AppleStock;
 
@@ -37,7 +38,7 @@ export type AreaProps = {
     width: number;
     height: number;
     margin?: { top: number; right: number; bottom: number; left: number };
-    data: AppleStock[],
+    data?: AppleStock[],
 };
 
 export default withTooltip<AreaProps, TooltipData>(
@@ -50,7 +51,7 @@ export default withTooltip<AreaProps, TooltipData>(
         tooltipData,
         tooltipTop = 0,
         tooltipLeft = 0,
-        data: stock,
+        data: stock = appleStock.slice(800),
     }: AreaProps & WithTooltipProvidedProps<TooltipData>) => {
         if (width < 10) return null;
 
