@@ -192,7 +192,7 @@ export default withTooltip<AreaProps, TooltipData>(
                             left={tooltipLeft + 12}
                             style={tooltipStyles}
                         >
-                            {`${getStockValue(tooltipData)}`}
+                            {`${getStockValue(tooltipData)} views`}
                         </TooltipWithBounds>
                         <Tooltip
                             top={innerHeight + margin.top - 14}
