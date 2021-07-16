@@ -63,6 +63,7 @@ const Input: React.FC<
                 {textarea ? (
                     <textarea
                         {...props}
+                        style={{ touchAction: 'manipulation' }}
                         id={id}
                         name={name}
                         className={classnames(
@@ -75,6 +76,7 @@ const Input: React.FC<
                 ) : (
                     <input
                         {...props}
+                        style={{ touchAction: 'manipulation' }}
                         id={id}
                         name={name}
                         type={type}

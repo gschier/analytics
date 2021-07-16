@@ -142,6 +142,7 @@ const Button: React.FC<ButtonProps & HTMLAttributes<HTMLButtonElement>> = ({
     return (
         <button
             {...props}
+            style={{ touchAction: 'manipulation' }}
             className={classnames(
                 'rounded-md',
                 'py-1.5',
