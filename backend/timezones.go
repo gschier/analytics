@@ -5,8 +5,8 @@ import (
 )
 
 func TimezoneToCountryCode(tz string) string {
-	c, ok := timezoneToCountryCode[tz]
-	if !ok {
+	c := timezoneToCountryCode[tz]
+	if c == "" {
 		fmt.Printf("[timezone] Failed to get country from timezone '%s'\n", tz)
 	}
 	return c
