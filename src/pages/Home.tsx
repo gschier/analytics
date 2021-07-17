@@ -10,6 +10,7 @@ import useRollups from '../hooks/use-rollups';
 import { Table, TableRow } from '../components/Table';
 import { Paragraph } from '../components/Typography';
 import { capitalize } from '../util/text';
+import Link from '../components/Link';
 
 const Home: React.FC = () => {
   const { data: pageviews } = usePageviews();
@@ -39,15 +40,18 @@ const Home: React.FC = () => {
       <div className="w-full h-64">
         {pageviews && (
           <Card title="Recent Views">
-            <Table columns={['Date', 'Country', 'Screen', 'SID']}>
+            <Table columns={['Date', 'Path', 'Country', 'Screen', 'SID']}>
               {pageviews.slice(0, 100).map((pv) => (
                 <TableRow key={pv.id}>
                   <Paragraph>
                     {capitalize(formatRelative(pv.createdAt, new Date()))}
                   </Paragraph>
+                  <Paragraph>
+                    <Link to={`${pv.host}${pv.path}`}>{`${pv.path}`}</Link>
+                  </Paragraph>
                   <Paragraph>{pv.countryCode}</Paragraph>
                   <Paragraph>{pv.screenSize}</Paragraph>
-                  <Paragraph>{pv.sid}</Paragraph>
+                  <Paragraph>{pv.sid.slice(0, 5)}</Paragraph>
                 </TableRow>
               ))}
             </Table>
