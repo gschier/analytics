@@ -37,8 +37,8 @@
   }
 
   function screensize() {
-    const w = window.screen.w;
-    const h = window.screen.h;
+    const w = window.screen.width;
+    const h = window.screen.height;
     return `${Math.round(w / 100) * 100}x${Math.round(h / 100) * 100}`;
   }
 
