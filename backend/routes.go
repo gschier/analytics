@@ -13,10 +13,15 @@ func SetupRouter() http.Handler {
 		http.ServeFile(w, r, "./dist/tracker.js")
 	})
 
-	r.Path("/api/pageviews").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	r.Path("/api/rollups/pageviews").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pageviews := FindAnalyticsPageviews(GetDB(), r.Context(), ensureDummyWebsite())
 		rollups := RollupPageviews(time.Now().Add(-24*7*time.Hour+time.Hour), 24*7, PeriodHour, pageviews)
 		RespondJSON(w, &rollups)
+	})
+
+	r.Path("/api/pageviews").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		pageviews := FindAnalyticsPageviews(GetDB(), r.Context(), ensureDummyWebsite())
+		RespondJSON(w, &pageviews)
 	})
 
 	r.Path("/api/event").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +45,7 @@ func SetupRouter() http.Handler {
 
 		userAgent := r.UserAgent()
 		sid := GenerateSID(r, site)
-		countryCode := TimezoneToCountryCode[timezone]
+		countryCode := TimezoneToCountryCode(timezone)
 
 		CreateAnalyticsPageview(GetDB(), r.Context(), site, host, path, screensize, countryCode, sid, userAgent)
 	})

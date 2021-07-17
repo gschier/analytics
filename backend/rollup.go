@@ -8,11 +8,11 @@ import (
 )
 
 type Bucket struct {
-	Start  time.Time
-	End    time.Time
-	Count  uint64
-	Unique uint64
-	HLL    []byte
+	Start  time.Time `json:"start"`
+	End    time.Time `json:"end"`
+	Count  uint64    `json:"count"`
+	Unique uint64    `json:"unique"`
+	HLL    []byte    `json:"-"`
 }
 
 type RollupPeriod int
@@ -39,16 +39,16 @@ func RollupPageviews(start time.Time, window int, period RollupPeriod, pageviews
 	return Rollup(start, window, period, events)
 }
 
-func RollupEvents(start time.Time, window int, period RollupPeriod, pageviews []AnalyticsEvent) []Bucket {
-	events := make([]RollupEvent, len(pageviews))
-	for i := range pageviews {
-		events[i] = RollupEvent{
-			Time:      pageviews[i].CreatedAt,
-			UniqueKey: pageviews[i].Name,
-		}
-	}
-	return Rollup(start, window, period, events)
-}
+// func RollupEvents(start time.Time, window int, period RollupPeriod, pageviews []AnalyticsEvent) []Bucket {
+// 	events := make([]RollupEvent, len(pageviews))
+// 	for i := range pageviews {
+// 		events[i] = RollupEvent{
+// 			Time:      pageviews[i].CreatedAt,
+// 			UniqueKey: pageviews[i].Name,
+// 		}
+// 	}
+// 	return Rollup(start, window, period, events)
+// }
 
 func Rollup(start time.Time, window int, period RollupPeriod, events []RollupEvent) []Bucket {
 	end := start.Add(time.Duration(window) * time.Duration(period))
@@ -98,16 +98,4 @@ func Rollup(start time.Time, window int, period RollupPeriod, events []RollupEve
 	}
 
 	return buckets
-}
-
-// OptimalPeriod calculates the bucket size to use for each rollup between two dates
-func OptimalPeriod(start, end time.Time) time.Duration {
-	delta := end.Sub(start)
-	if delta/time.Minute < 30 {
-		return time.Minute
-	}
-	if delta/time.Hour > 30 {
-		return time.Hour
-	}
-	return time.Hour * 24
 }

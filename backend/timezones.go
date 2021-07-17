@@ -1,6 +1,18 @@
 package main
 
-// TimezoneToCountryCode was parsed from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+import (
+	"fmt"
+)
+
+func TimezoneToCountryCode(tz string) string {
+	c, ok := timezoneToCountryCode[tz]
+	if !ok {
+		fmt.Printf("[timezone] Failed to get country from timezone '%s'\n", tz)
+	}
+	return c
+}
+
+// timezoneToCountryCode was parsed from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 //  n```js
 //   const mapping = {};
 //   document.querySelectorAll('table tbody')[0].querySelectorAll('tr').forEach(tr => {
@@ -8,7 +20,7 @@ package main
 //     mapping[tds[2].innerText] = tds[0].innerText;
 //   });
 //   ```
-var TimezoneToCountryCode = map[string]string{
+var timezoneToCountryCode = map[string]string{
 	"Africa/Abidjan":                   "CI",
 	"Africa/Accra":                     "GH",
 	"Africa/Addis_Ababa":               "ET",
