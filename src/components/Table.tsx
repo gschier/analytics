@@ -18,11 +18,7 @@ export const Table: React.FC<TableProps & HTMLAttributes<HTMLElement>> = ({
   return (
     <div
       className={classnames(
-        'border',
-        'border-gray-100',
-        'w-full',
-        'overflow-hidden',
-        'rounded',
+        'border border-gray-100 w-full overflow-hidden rounded overflow-x-auto',
         className,
       )}>
       <table {...props} className="w-full divide-y divide-gray-100">
@@ -33,9 +29,7 @@ export const Table: React.FC<TableProps & HTMLAttributes<HTMLElement>> = ({
                 <th
                   key={i}
                   className={classnames(
-                    'font-medium',
-                    'text-left',
-                    'bg-gray-50',
+                    'font-medium text-left bg-gray-50',
                     cellClass,
                   )}>
                   <Paragraph size="sm">{c}</Paragraph>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { formatRelative } from 'date-fns';
-import { VStack } from '../components/Stacks';
+import { HStack, VStack } from '../components/Stacks';
 import Title from '../components/Title';
 import ParentSize from '@visx/responsive/lib/components/ParentSize';
 import TestChart from '../components/TestChart';
@@ -8,17 +8,50 @@ import usePageviews from '../hooks/use-pageviews';
 import Card from '../components/Card';
 import useRollups from '../hooks/use-rollups';
 import { Table, TableRow } from '../components/Table';
-import { Paragraph } from '../components/Typography';
+import { HugeText, Paragraph } from '../components/Typography';
 import { capitalize } from '../util/text';
 import Link from '../components/Link';
+import useCurrentUsers from '../hooks/use-current-users';
+import useUniqueVisitors from '../hooks/use-unique-visitors';
+import useStateLocalStorage from '../hooks/use-state-localstorage';
+import Button from '../components/Button';
+import { Helmet } from 'react-helmet';
 
 const Home: React.FC = () => {
+  const [theme, setTheme] = useStateLocalStorage<'dark' | 'light'>(
+    'theme',
+    'light',
+  );
   const { data: pageviews } = usePageviews();
   const { data: rollups } = useRollups();
+  const currentUsers = useCurrentUsers();
+  const uniqueVisitors = useUniqueVisitors();
 
   return (
     <VStack space={3} className="m-4">
-      <Title>Analytics</Title>
+      <Helmet>
+        <html className={theme} />
+      </Helmet>
+      <HStack>
+        <Title>Analytics</Title>
+        <Button
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          className="ml-auto">
+          {capitalize(theme)} Mode
+        </Button>
+      </HStack>
+
+      <HStack space={3}>
+        <Card title="Current Users" className="w-full">
+          <HugeText>{currentUsers}</HugeText>
+        </Card>
+        <Card title="Unique Visitors" className="w-full">
+          <HugeText>{uniqueVisitors}</HugeText>
+        </Card>
+        <Card title="Pageviews" className="w-full">
+          <HugeText>{pageviews?.length || ''}</HugeText>
+        </Card>
+      </HStack>
 
       <div className="w-full h-64">
         {rollups && (
@@ -39,23 +72,21 @@ const Home: React.FC = () => {
 
       <div className="w-full h-64">
         {pageviews && (
-          <Card title="Recent Views">
-            <Table columns={['Date', 'Path', 'Country', 'Screen', 'SID']}>
-              {pageviews.slice(0, 100).map((pv) => (
-                <TableRow key={pv.id}>
-                  <Paragraph>
-                    {capitalize(formatRelative(pv.createdAt, new Date()))}
-                  </Paragraph>
-                  <Paragraph>
-                    <Link to={`${pv.host}${pv.path}`}>{`${pv.path}`}</Link>
-                  </Paragraph>
-                  <Paragraph>{pv.countryCode}</Paragraph>
-                  <Paragraph>{pv.screenSize}</Paragraph>
-                  <Paragraph>{pv.sid.slice(0, 5)}</Paragraph>
-                </TableRow>
-              ))}
-            </Table>
-          </Card>
+          <Table columns={['Date', 'Path', 'Country', 'Screen', 'SID']}>
+            {pageviews.slice(0, 100).map((pv) => (
+              <TableRow key={pv.id}>
+                <Paragraph>
+                  {capitalize(formatRelative(pv.createdAt, new Date()))}
+                </Paragraph>
+                <Paragraph>
+                  <Link to={`${pv.host}${pv.path}`}>{`${pv.path}`}</Link>
+                </Paragraph>
+                <Paragraph>{pv.countryCode}</Paragraph>
+                <Paragraph>{pv.screenSize}</Paragraph>
+                <Paragraph>{pv.sid.slice(0, 5)}</Paragraph>
+              </TableRow>
+            ))}
+          </Table>
         )}
       </div>
     </VStack>
