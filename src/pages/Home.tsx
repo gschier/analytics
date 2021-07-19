@@ -62,11 +62,11 @@ const Home: React.FC = () => {
                 height={height}
                 data={rollups.map((r) => ({
                   date: r.start.toISOString(),
-                  close: r.total,
+                  close: r.unique,
                 }))}
                 data2={rollups.map((r) => ({
                   date: r.start.toISOString(),
-                  close: r.unique,
+                  close: r.total,
                 }))}
               />
             )}

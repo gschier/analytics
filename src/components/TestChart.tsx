@@ -162,7 +162,7 @@ export default withTooltip<AreaProps, TooltipData>(
             pointerEvents="none"
           />
           <AreaClosed<AppleStock>
-            data={stock}
+            data={stock2}
             x={(d) => dateScale(getDate(d)) ?? 0}
             y={(d) => stockValueScale(getStockValue(d)) ?? 0}
             yScale={stockValueScale}
@@ -172,7 +172,7 @@ export default withTooltip<AreaProps, TooltipData>(
             curve={curveMonotoneX}
           />
           <AreaClosed<AppleStock>
-            data={stock2}
+            data={stock}
             x={(d) => dateScale(getDate(d)) ?? 0}
             y={(d) => stockValueScale(getStockValue(d)) ?? 0}
             yScale={stockValueScale}
@@ -236,7 +236,7 @@ export default withTooltip<AreaProps, TooltipData>(
               top={tooltipTop - 38}
               left={tooltipLeft + 2}
               style={tooltipStyles}>
-              {`${getStockValue(tooltipData)} views`}
+              {`${getStockValue(tooltipData)} Visitors`}
             </TooltipWithBounds>
             <Tooltip
               top={innerHeight + margin.top - 4}
