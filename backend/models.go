@@ -164,8 +164,7 @@ func FindAnalyticsPageviewsHourly(db DBLike, ctx context.Context, start, end tim
 			   TO_TIMESTAMP(FLOOR((EXTRACT('epoch' FROM created_at) / 3600)) * 3600) AT TIME ZONE 'UTC' AS bucket
 		FROM analytics_pageviews
 		WHERE website_id = $1 AND created_at >= $2 AND created_at < $3
-		GROUP BY bucket
-		ORDER BY bucket ASC;
+		GROUP BY bucket;
 	`, websiteID, start, end)
 
 	// Iterate over all buckets, to make sure we create ones for periods with no events
