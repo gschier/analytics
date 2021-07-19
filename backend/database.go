@@ -125,25 +125,29 @@ var migrations = []Migration{{
 			    created_at   TIMESTAMP(3) WITH TIME ZONE
 			);
 
+			-- Analytics tables don't have unique constraints, FKs, or PKs for fast inserts
+
 			CREATE TABLE analytics_events (
-			    id         VARCHAR(40)  PRIMARY KEY,
-				website_id VARCHAR(40)  NOT NULL REFERENCES websites(id) ON DELETE CASCADE,
-			    created_at TIMESTAMP(3) WITH TIME ZONE,
+			    id         VARCHAR(64)  NOT NULL,
 			    sid        VARCHAR(64)  NOT NULL,
+				website_id VARCHAR(40)  NOT NULL,
+			    created_at TIMESTAMP(0) WITH TIME ZONE,
 			    name       VARCHAR(64)  NOT NULL
 			);
+			CREATE INDEX analytics_events__website_id_created_at ON analytics_events (website_id, created_at);
 
 			CREATE TABLE analytics_pageviews (
-			    id           VARCHAR(40)  PRIMARY KEY,
-				website_id   VARCHAR(40)  NOT NULL REFERENCES websites(id) ON DELETE CASCADE,
+			    id           VARCHAR(64)  NOT NULL,
 			    sid          VARCHAR(64)  NOT NULL,
-			    created_at   TIMESTAMP(3) WITH TIME ZONE,
+				website_id   VARCHAR(40)  NOT NULL,
+			    created_at   TIMESTAMP(0) WITH TIME ZONE,
 				host         VARCHAR(512) NOT NULL,
 				path         TEXT         NOT NULL,
 				screen_size  VARCHAR(32)  NOT NULL,
 				country_code VARCHAR(2)   NOT NULL,
 				user_agent   TEXT         NOT NULL
 			);
+			CREATE INDEX analytics_pageviews__website_id_created_at ON analytics_pageviews (website_id, created_at);
 		`)
 
 		return err

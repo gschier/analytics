@@ -14,8 +14,13 @@ func SetupRouter() http.Handler {
 	})
 
 	r.Path("/api/rollups/pageviews").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		pageviews := FindAnalyticsPageviews(GetDB(), r.Context(), ensureDummyWebsite())
-		rollups := RollupPageviews(time.Now().Add(-24*7*time.Hour+time.Hour), 24*7, PeriodHour, pageviews)
+		rollups := FindAnalyticsPageviewsHourly(
+			GetDB(),
+			r.Context(),
+			time.Now().Add(-24*7*time.Hour+time.Hour),
+			time.Now().Add(time.Hour),
+			ensureDummyWebsite(),
+		)
 		RespondJSON(w, &rollups)
 	})
 
@@ -29,9 +34,9 @@ func SetupRouter() http.Handler {
 
 		site := q.Get("id")
 		eventName := q.Get("e")
-		sid := GenerateSID(r, site)
+		id, sid := GenerateIDAndSID(r, site)
 
-		CreateAnalyticsEvent(GetDB(), r.Context(), site, eventName, sid)
+		CreateAnalyticsEvent(GetDB(), r.Context(), id, sid, site, eventName)
 	})
 
 	r.Path("/api/page").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -44,10 +49,11 @@ func SetupRouter() http.Handler {
 		timezone := q.Get("tz")
 
 		userAgent := r.UserAgent()
-		sid := GenerateSID(r, site)
+		id, sid := GenerateIDAndSID(r, site)
 		countryCode := TimezoneToCountryCode(timezone)
 
-		CreateAnalyticsPageview(GetDB(), r.Context(), site, host, path, screensize, countryCode, sid, userAgent)
+		CreateAnalyticsPageview(GetDB(), r.Context(), id, sid, site, host, path, screensize, countryCode, userAgent)
+		RespondText(w, "OK")
 	})
 
 	r.PathPrefix("/assets").Handler(http.FileServer(http.Dir("./dist")))

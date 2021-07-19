@@ -3,7 +3,7 @@ import { useQuery } from 'react-query';
 export interface Rollup {
   start: Date;
   end: Date;
-  count: number;
+  total: number;
   unique: number;
 }
 

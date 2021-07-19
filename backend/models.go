@@ -16,12 +16,12 @@ type Account struct {
 	HashedPassword string    `db:"hashed_password" json:"-"`
 }
 
-type Session struct {
-	ID          string    `db:"id"           json:"id"`
-	AccountID   string    `db:"account_id"   json:"accountId"`
-	CreatedAt   time.Time `db:"created_at"   json:"createdAt"`
-	RefreshedAt time.Time `db:"refreshed_at" json:"refreshedAt"`
-}
+// type Session struct {
+// 	ID          string    `db:"id"           json:"id"`
+// 	AccountID   string    `db:"account_id"   json:"accountId"`
+// 	CreatedAt   time.Time `db:"created_at"   json:"createdAt"`
+// 	RefreshedAt time.Time `db:"refreshed_at" json:"refreshedAt"`
+// }
 
 type Website struct {
 	ID        string    `db:"id"         json:"id"`
@@ -32,18 +32,17 @@ type Website struct {
 }
 
 type AnalyticsEvent struct {
-	ID         string    `db:"id"          json:"id"`
-	WebsiteID  string    `db:"website_id"  json:"websiteId"`
-	SID        string    `db:"sid"         json:"sid"`
-	CreatedAt  time.Time `db:"created_at"  json:"createdAt"`
-	SessionKey string    `db:"session_key" json:"sessionKey"`
-	Name       string    `db:"name"        json:"name"`
+	ID        string    `db:"id"          json:"id"`
+	WebsiteID string    `db:"website_id"  json:"websiteId"`
+	CreatedAt time.Time `db:"created_at"  json:"createdAt"`
+	SID       string    `db:"sid"         json:"sid"`
+	Name      string    `db:"name"        json:"name"`
 }
 
 type AnalyticsPageview struct {
 	ID          string    `db:"id"           json:"id"`
-	WebsiteID   string    `db:"website_id"   json:"websiteId"`
 	SID         string    `db:"sid"          json:"sid"`
+	WebsiteID   string    `db:"website_id"   json:"websiteId"`
 	CreatedAt   time.Time `db:"created_at"   json:"createdAt"`
 	Host        string    `db:"host"         json:"host"`
 	Path        string    `db:"path"         json:"path"`
@@ -114,28 +113,28 @@ func CreateAccount(db DBLike, ctx context.Context, email, password string) *Acco
 	return &account
 }
 
-func FindAnalyticsEvents(db DBLike, ctx context.Context, websiteID string) []AnalyticsEvent {
-	var events []AnalyticsEvent
-	dbMany(db, ctx, &events, `
-		SELECT * FROM analytics_events 
-		WHERE website_id = $1
-		ORDER BY created_at DESC
-	`, websiteID)
-	return events
-}
+// func FindAnalyticsEvents(db DBLike, ctx context.Context, websiteID string) []AnalyticsEvent {
+// 	var events []AnalyticsEvent
+// 	dbMany(db, ctx, &events, `
+// 		SELECT * FROM analytics_events
+// 		WHERE website_id = $1
+// 		ORDER BY created_at DESC
+// 	`, websiteID)
+// 	return events
+// }
 
-func CreateAnalyticsEvent(db DBLike, ctx context.Context, websiteID, name, sessionKey string) *AnalyticsEvent {
+func CreateAnalyticsEvent(db DBLike, ctx context.Context, id, sid, websiteID, name string) *AnalyticsEvent {
 	event := AnalyticsEvent{
-		ID:         newID("evnt_"),
-		WebsiteID:  websiteID,
-		CreatedAt:  time.Now(),
-		Name:       name,
-		SessionKey: sessionKey,
+		ID:        id,
+		SID:       sid,
+		WebsiteID: websiteID,
+		CreatedAt: time.Now(),
+		Name:      name,
 	}
 
 	dbExec(db, ctx, `
-		INSERT INTO analytics_events (id, website_id, created_at, sid, name) 
-		VALUES (:id, :website_id, :created_at, :sid, :name)
+		INSERT INTO analytics_events (id, sid, website_id, created_at, name) 
+		VALUES (:id, :sid, :website_id, :created_at, :name)
 	`, &event)
 
 	return &event
@@ -151,9 +150,50 @@ func FindAnalyticsPageviews(db DBLike, ctx context.Context, websiteID string) []
 	return pageviews
 }
 
-func CreateAnalyticsPageview(db DBLike, ctx context.Context, websiteID, host, path, screensize, country, sid, userAgent string) *AnalyticsPageview {
+func FindAnalyticsPageviewsHourly(db DBLike, ctx context.Context, start, end time.Time, websiteID string) []Bucket {
+	type count struct {
+		Total  int64     `db:"count_total"`
+		Unique int64     `db:"count_unique"`
+		Bucket time.Time `db:"bucket"`
+	}
+
+	var counts []count
+	dbMany(db, ctx, &counts, `
+		SELECT COUNT(id)                                                                                AS count_total,
+			   COUNT(DISTINCT sid)                                                                      AS count_unique,
+			   TO_TIMESTAMP(FLOOR((EXTRACT('epoch' FROM created_at) / 3600)) * 3600) AT TIME ZONE 'UTC' AS bucket
+		FROM analytics_pageviews
+		WHERE website_id = $1 AND created_at >= $2 AND created_at < $3
+		GROUP BY bucket
+		ORDER BY bucket ASC;
+	`, websiteID, start, end)
+
+	// Iterate over all buckets, to make sure we create ones for periods with no events
+	buckets := make([]Bucket, end.Sub(start)/time.Hour)
+	startFloored := GetBucketStart(start, PeriodHour)
+	for i := 0; i < len(buckets); i++ {
+		bucketStart := startFloored.Add(time.Duration(i) * time.Hour)
+		bucket := Bucket{Start: bucketStart, End: bucketStart.Add(time.Hour)}
+
+		// Try to find a count for the bucket. If so, fill it in
+		for _, c := range counts {
+			if !c.Bucket.Equal(bucket.Start) {
+				continue
+			}
+
+			bucket.Total = c.Total
+			bucket.Unique = c.Unique
+		}
+
+		buckets[i] = bucket
+	}
+
+	return buckets
+}
+
+func CreateAnalyticsPageview(db DBLike, ctx context.Context, id, sid, websiteID, host, path, screensize, country, userAgent string) *AnalyticsPageview {
 	pageview := AnalyticsPageview{
-		ID:          newID("pgvw_"),
+		ID:          id,
 		CreatedAt:   time.Now(),
 		WebsiteID:   websiteID,
 		SID:         sid,

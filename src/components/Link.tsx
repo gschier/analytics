@@ -6,6 +6,7 @@ import Button from './Button';
 export interface LinkProps {
   to: string;
   button?: boolean;
+  external?: boolean;
 }
 
 const Link: React.FC<LinkProps & HTMLAttributes<HTMLElement>> = ({
@@ -13,6 +14,7 @@ const Link: React.FC<LinkProps & HTMLAttributes<HTMLElement>> = ({
   children,
   button,
   to,
+  external,
   ...props
 }) => {
   const allProps = {
@@ -26,9 +28,14 @@ const Link: React.FC<LinkProps & HTMLAttributes<HTMLElement>> = ({
 
   const realChildren = button ? <Button>{children}</Button> : children;
 
-  if (to.match(/^https?:\/\//)) {
+  const hasProto = to.match(/^https?:\/\//);
+  if (external || hasProto) {
     return (
-      <a href={to} {...allProps}>
+      <a
+        href={hasProto ? to : `https://${to}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        {...allProps}>
         {realChildren}
       </a>
     );

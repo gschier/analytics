@@ -15,6 +15,11 @@ func RespondJSON(w http.ResponseWriter, v interface{}) {
 	}
 }
 
+func RespondText(w http.ResponseWriter, t string) {
+	w.Header().Set("Content-Type", "text/plain")
+	_, _ = w.Write([]byte(t))
+}
+
 func RespondError(w http.ResponseWriter, err error) {
 	w.Header().Set("Content-Type", "text/plain")
 	log.Println("Internal error", err.Error())

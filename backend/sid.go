@@ -5,17 +5,23 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 )
 
-func GenerateSID(r *http.Request, siteID string) string {
-	sid := sha1.New()
+func GenerateIDAndSID(r *http.Request, siteID string) (string, string) {
+	h := sha1.New()
 
-	sid.Write([]byte(Config.SessionSalt)) // Unique globally
-	sid.Write([]byte(siteID))             // Unique per site
-	sid.Write([]byte(GetIPAddress(r)))    // Unique per IP
-	sid.Write([]byte(r.UserAgent()))      // Unique per user-agent
+	h.Write([]byte(Config.SessionSalt)) // Unique globally
+	h.Write([]byte(siteID))             // Unique per site
+	h.Write([]byte(GetIPAddress(r)))    // Unique per IP
+	h.Write([]byte(r.UserAgent()))      // Unique per user-agent
+	sid := fmt.Sprintf("%x", h.Sum(nil))
 
-	return fmt.Sprintf("%x", sid.Sum(nil))
+	h.Write([]byte(r.URL.Path))
+	h.Write([]byte(time.Now().Format(time.RFC3339Nano)))
+	id := fmt.Sprintf("%x", h.Sum(nil))
+
+	return id, sid
 }
 
 func GetIPAddress(r *http.Request) string {

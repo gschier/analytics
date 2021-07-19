@@ -42,14 +42,14 @@ const Home: React.FC = () => {
       </HStack>
 
       <HStack space={3}>
-        <Card title="Current Users" className="w-full">
+        <Card title="Live" className="w-full">
           <HugeText>{currentUsers}</HugeText>
         </Card>
-        <Card title="Unique Visitors" className="w-full">
+        <Card title="Visitors" className="w-full">
           <HugeText>{uniqueVisitors}</HugeText>
         </Card>
-        <Card title="Pageviews" className="w-full">
-          <HugeText>{pageviews?.length || ''}</HugeText>
+        <Card title="Views" className="w-full">
+          <HugeText>{pageviews ? pageviews.length : <>&nbsp;</>}</HugeText>
         </Card>
       </HStack>
 
@@ -62,7 +62,7 @@ const Home: React.FC = () => {
                 height={height}
                 data={rollups.map((r) => ({
                   date: r.start.toISOString(),
-                  close: r.count,
+                  close: r.total,
                 }))}
               />
             )}
@@ -79,7 +79,9 @@ const Home: React.FC = () => {
                   {capitalize(formatRelative(pv.createdAt, new Date()))}
                 </Paragraph>
                 <Paragraph>
-                  <Link to={`${pv.host}${pv.path}`}>{`${pv.path}`}</Link>
+                  <Link external to={`${pv.host}${pv.path}`}>
+                    {`${pv.path}`}
+                  </Link>
                 </Paragraph>
                 <Paragraph>{pv.countryCode}</Paragraph>
                 <Paragraph>{pv.screenSize}</Paragraph>
