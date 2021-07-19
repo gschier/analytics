@@ -20,8 +20,10 @@ type TooltipData = AppleStock;
 
 export const background = 'hsl(var(--color-primary-50))';
 export const background2 = 'hsl(var(--color-primary-50))';
-export const accentColor = 'hsl(var(--color-primary-500))';
-export const accentColor2 = 'hsl(var(--color-primary-400))';
+export const accentColor = 'hsl(var(--color-primary-400))';
+export const accentColor2 = 'hsl(var(--color-primary-300))';
+export const accentColorTwo = 'hsl(var(--color-primary-500))';
+export const accentColorTwo2 = 'hsl(var(--color-primary-400))';
 export const accentColorDark = 'hsl(var(--color-primary-600))';
 const tooltipStyles = {
   ...defaultStyles,
@@ -43,6 +45,7 @@ export type AreaProps = {
   height: number;
   margin?: { top: number; right: number; bottom: number; left: number };
   data?: AppleStock[];
+  data2?: AppleStock[];
 };
 
 export default withTooltip<AreaProps, TooltipData>(
@@ -56,6 +59,7 @@ export default withTooltip<AreaProps, TooltipData>(
     tooltipTop = 0,
     tooltipLeft = 0,
     data: stock = appleStock.slice(800),
+    data2: stock2 = appleStock.slice(800),
   }: AreaProps & WithTooltipProvidedProps<TooltipData>) => {
     if (width < 10) return null;
     if (stock.length === 0) return null;
@@ -134,6 +138,11 @@ export default withTooltip<AreaProps, TooltipData>(
             from={accentColor}
             to={accentColor2}
           />
+          <LinearGradient
+            id="area-gradient-2"
+            from={accentColorTwo}
+            to={accentColorTwo2}
+          />
           <GridRows
             left={margin.left}
             scale={stockValueScale}
@@ -160,6 +169,16 @@ export default withTooltip<AreaProps, TooltipData>(
             strokeWidth={1}
             stroke="url(#area-gradient)"
             fill="url(#area-gradient)"
+            curve={curveMonotoneX}
+          />
+          <AreaClosed<AppleStock>
+            data={stock2}
+            x={(d) => dateScale(getDate(d)) ?? 0}
+            y={(d) => stockValueScale(getStockValue(d)) ?? 0}
+            yScale={stockValueScale}
+            strokeWidth={1}
+            stroke="url(#area-gradient-2)"
+            fill="url(#area-gradient-2)"
             curve={curveMonotoneX}
           />
           <Bar

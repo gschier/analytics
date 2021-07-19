@@ -64,6 +64,10 @@ const Home: React.FC = () => {
                   date: r.start.toISOString(),
                   close: r.total,
                 }))}
+                data2={rollups.map((r) => ({
+                  date: r.start.toISOString(),
+                  close: r.unique,
+                }))}
               />
             )}
           </ParentSize>
