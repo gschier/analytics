@@ -2,6 +2,7 @@ import { useQuery } from 'react-query';
 
 export interface PageCount {
   path: string;
+  host: string;
   total: number;
   unique: number;
 }

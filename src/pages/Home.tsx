@@ -83,7 +83,9 @@ const Home: React.FC = () => {
           <Table columns={['Path', 'Unique', 'Total']} className="w-2/3">
             {popularPages.map((pp) => (
               <TableRow key={pp.path}>
-                <Paragraph>{pp.path}</Paragraph>
+                <Link external to={`${pp.host}${pp.path}`}>
+                  {`${pp.path}`}
+                </Link>
                 <Paragraph>{pp.unique}</Paragraph>
                 <Paragraph>{pp.total}</Paragraph>
               </TableRow>
@@ -111,11 +113,9 @@ const Home: React.FC = () => {
               <Paragraph>
                 {capitalize(formatRelative(pv.createdAt, new Date()))}
               </Paragraph>
-              <Paragraph>
-                <Link external to={`${pv.host}${pv.path}`}>
-                  {`${pv.path}`}
-                </Link>
-              </Paragraph>
+              <Link external to={`${pv.host}${pv.path}`}>
+                {`${pv.path}`}
+              </Link>
               <Paragraph>{pv.countryCode}</Paragraph>
               <Paragraph>{pv.screenSize}</Paragraph>
               <Paragraph>{pv.sid.slice(0, 5)}</Paragraph>

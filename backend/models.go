@@ -195,6 +195,7 @@ type PathCount struct {
 	Total  int64  `db:"count_total" json:"total"`
 	Unique int64  `db:"count_unique" json:"unique"`
 	Path   string `db:"path" json:"path"`
+	Host   string `db:"host" json:"host"`
 }
 
 type CountryCount struct {
@@ -208,13 +209,14 @@ func FindAnalyticsPageviewsPopularPages(db DBLike, ctx context.Context, start, e
 
 	dbMany(db, ctx, &counts, `
 		SELECT path,
+		       host,
 			   COUNT(id)           AS count_total,
 			   COUNT(DISTINCT sid) AS count_unique
 		FROM analytics_pageviews
 		WHERE website_id = $1
 		  AND created_at >= $2
 		  AND created_at < $3
-		GROUP BY path
+		GROUP BY path, host
 		ORDER BY count_unique DESC
 		LIMIT 10;
 	`, websiteID, start, end)
