@@ -19,8 +19,8 @@ const Link: React.FC<LinkProps & HTMLAttributes<HTMLElement>> = ({
 }) => {
   const allProps = {
     className: classnames(
-      'text-secondary-500',
-      'hover:text-secondary-700 hover:underline',
+      'text-primary-500',
+      'hover:text-primary-600 hover:underline',
       className,
     ),
     ...props,
