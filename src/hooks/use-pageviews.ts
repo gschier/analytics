@@ -14,7 +14,7 @@ export interface Pageview {
 
 const usePageviews = () =>
   useQuery<Pageview[]>(
-    'pageviews',
+    ['pageviews'],
     async () => {
       const res = await fetch('/api/pageviews');
       return (await res.json()).map((pv: any) => {

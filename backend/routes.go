@@ -24,6 +24,28 @@ func SetupRouter() http.Handler {
 		RespondJSON(w, &rollups)
 	})
 
+	r.Path("/api/rollups/pageviews/paths").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		counts := FindAnalyticsPageviewsPopularPages(
+			GetDB(),
+			r.Context(),
+			time.Now().Add(-24*7*time.Hour+time.Hour),
+			time.Now().Add(time.Hour),
+			ensureDummyWebsite(),
+		)
+		RespondJSON(w, &counts)
+	})
+
+	r.Path("/api/rollups/pageviews/countries").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		counts := FindAnalyticsPageviewsPopularCountries(
+			GetDB(),
+			r.Context(),
+			time.Now().Add(-24*7*time.Hour+time.Hour),
+			time.Now().Add(time.Hour),
+			ensureDummyWebsite(),
+		)
+		RespondJSON(w, &counts)
+	})
+
 	r.Path("/api/pageviews").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pageviews := FindAnalyticsPageviews(GetDB(), r.Context(), ensureDummyWebsite())
 		RespondJSON(w, &pageviews)

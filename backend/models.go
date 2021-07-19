@@ -146,6 +146,7 @@ func FindAnalyticsPageviews(db DBLike, ctx context.Context, websiteID string) []
 		SELECT * FROM analytics_pageviews 
 		WHERE website_id = $1
 		ORDER BY created_at DESC
+		LIMIT 20
 	`, websiteID)
 	return pageviews
 }
@@ -188,6 +189,57 @@ func FindAnalyticsPageviewsHourly(db DBLike, ctx context.Context, start, end tim
 	}
 
 	return buckets
+}
+
+type PathCount struct {
+	Total  int64  `db:"count_total" json:"total"`
+	Unique int64  `db:"count_unique" json:"unique"`
+	Path   string `db:"path" json:"path"`
+}
+
+type CountryCount struct {
+	Total   int64  `db:"count_total" json:"total"`
+	Unique  int64  `db:"count_unique" json:"unique"`
+	Country string `db:"country_code" json:"country"`
+}
+
+func FindAnalyticsPageviewsPopularPages(db DBLike, ctx context.Context, start, end time.Time, websiteID string) []PathCount {
+	var counts []PathCount
+
+	dbMany(db, ctx, &counts, `
+		SELECT path,
+			   COUNT(id)           AS count_total,
+			   COUNT(DISTINCT sid) AS count_unique
+		FROM analytics_pageviews
+		WHERE website_id = $1
+		  AND created_at >= $2
+		  AND created_at < $3
+		GROUP BY path
+		ORDER BY count_unique DESC
+		LIMIT 10;
+	`, websiteID, start, end)
+
+	return counts
+}
+
+func FindAnalyticsPageviewsPopularCountries(db DBLike, ctx context.Context, start, end time.Time, websiteID string) []CountryCount {
+	var counts []CountryCount
+
+	dbMany(db, ctx, &counts, `
+		SELECT country_code,
+			   COUNT(id)           AS count_total,
+			   COUNT(DISTINCT sid) AS count_unique
+		FROM analytics_pageviews
+		WHERE country_code != '' 
+		  AND website_id = $1
+		  AND created_at >= $2
+		  AND created_at < $3
+		GROUP BY country_code
+		ORDER BY count_unique DESC
+		LIMIT 10;
+	`, websiteID, start, end)
+
+	return counts
 }
 
 func CreateAnalyticsPageview(db DBLike, ctx context.Context, id, sid, websiteID, host, path, screensize, country, userAgent string) *AnalyticsPageview {

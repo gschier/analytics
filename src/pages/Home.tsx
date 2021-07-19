@@ -16,6 +16,8 @@ import useUniqueVisitors from '../hooks/use-unique-visitors';
 import useStateLocalStorage from '../hooks/use-state-localstorage';
 import Button from '../components/Button';
 import { Helmet } from 'react-helmet';
+import usePopularPages from '../hooks/use-popular-pages';
+import usePopularCountries from '../hooks/use-popular-countries';
 
 const Home: React.FC = () => {
   const [theme, setTheme] = useStateLocalStorage<'dark' | 'light'>(
@@ -24,11 +26,13 @@ const Home: React.FC = () => {
   );
   const { data: pageviews } = usePageviews();
   const { data: rollups } = useRollups();
+  const { data: popularPages } = usePopularPages();
+  const { data: popularCountries } = usePopularCountries();
   const currentUsers = useCurrentUsers();
   const uniqueVisitors = useUniqueVisitors();
 
   return (
-    <VStack space={3} className="m-4">
+    <VStack space={6} className="m-4">
       <Helmet>
         <html className={theme} />
       </Helmet>
@@ -74,27 +78,51 @@ const Home: React.FC = () => {
         )}
       </div>
 
-      <div className="w-full h-64">
-        {pageviews && (
-          <Table columns={['Date', 'Path', 'Country', 'Screen', 'SID']}>
-            {pageviews.slice(0, 100).map((pv) => (
-              <TableRow key={pv.id}>
-                <Paragraph>
-                  {capitalize(formatRelative(pv.createdAt, new Date()))}
-                </Paragraph>
-                <Paragraph>
-                  <Link external to={`${pv.host}${pv.path}`}>
-                    {`${pv.path}`}
-                  </Link>
-                </Paragraph>
-                <Paragraph>{pv.countryCode}</Paragraph>
-                <Paragraph>{pv.screenSize}</Paragraph>
-                <Paragraph>{pv.sid.slice(0, 5)}</Paragraph>
+      <HStack space={3} align="start">
+        {popularPages && (
+          <Table columns={['Path', 'Unique', 'Total']} className="w-2/3">
+            {popularPages.map((pp) => (
+              <TableRow key={pp.path}>
+                <Paragraph>{pp.path}</Paragraph>
+                <Paragraph>{pp.unique}</Paragraph>
+                <Paragraph>{pp.total}</Paragraph>
               </TableRow>
             ))}
           </Table>
         )}
-      </div>
+
+        {popularCountries && (
+          <Table columns={['Country', 'Unique', 'Total']} className="w-1/3">
+            {popularCountries.map((pp) => (
+              <TableRow key={pp.country}>
+                <Paragraph>{pp.country}</Paragraph>
+                <Paragraph>{pp.unique}</Paragraph>
+                <Paragraph>{pp.total}</Paragraph>
+              </TableRow>
+            ))}
+          </Table>
+        )}
+      </HStack>
+
+      {pageviews && (
+        <Table columns={['Date', 'Path', 'Country', 'Screen', 'SID']}>
+          {pageviews.map((pv) => (
+            <TableRow key={pv.id}>
+              <Paragraph>
+                {capitalize(formatRelative(pv.createdAt, new Date()))}
+              </Paragraph>
+              <Paragraph>
+                <Link external to={`${pv.host}${pv.path}`}>
+                  {`${pv.path}`}
+                </Link>
+              </Paragraph>
+              <Paragraph>{pv.countryCode}</Paragraph>
+              <Paragraph>{pv.screenSize}</Paragraph>
+              <Paragraph>{pv.sid.slice(0, 5)}</Paragraph>
+            </TableRow>
+          ))}
+        </Table>
+      )}
     </VStack>
   );
 };
