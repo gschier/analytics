@@ -16,7 +16,6 @@ import useUniqueVisitors from '../hooks/use-unique-visitors';
 import useStateLocalStorage from '../hooks/use-state-localstorage';
 import Button from '../components/Button';
 import { Helmet } from 'react-helmet';
-import usePopularPages from '../hooks/use-popular-pages';
 import usePopularCountries from '../hooks/use-popular-countries';
 
 const Home: React.FC = () => {
@@ -26,8 +25,7 @@ const Home: React.FC = () => {
   );
   const { data: pageviews } = usePageviews();
   const { data: rollups } = useRollups();
-  const { data: popularPages } = usePopularPages();
-  const { data: popularCountries } = usePopularCountries();
+  const { data: popular } = usePopularCountries();
   const currentUsers = useCurrentUsers();
   const uniqueVisitors = useUniqueVisitors();
 
@@ -78,10 +76,41 @@ const Home: React.FC = () => {
         )}
       </div>
 
-      <HStack space={3} align="start">
-        {popularPages && (
-          <Table columns={['Path', 'Unique', 'Total']} className="w-2/3">
-            {popularPages.map((pp) => (
+      {popular && (
+        <HStack space={3} align="start">
+          <Table columns={['Country', 'Unique', 'Total']} className="w-1/2">
+            {popular
+              .filter((pp) => pp.country)
+              .slice(0, 6)
+              .map((pp) => (
+                <TableRow key={pp.country}>
+                  <Paragraph>{pp.country}</Paragraph>
+                  <Paragraph>{pp.unique}</Paragraph>
+                  <Paragraph>{pp.total}</Paragraph>
+                </TableRow>
+              ))}
+          </Table>
+          <Table columns={['Screen Size', 'Unique', 'Total']} className="w-1/2">
+            {popular
+              .filter((pp) => pp.screenSize)
+              .slice(0, 6)
+              .map((pp) => (
+                <TableRow key={pp.screenSize}>
+                  <Paragraph>{pp.screenSize}</Paragraph>
+                  <Paragraph>{pp.unique}</Paragraph>
+                  <Paragraph>{pp.total}</Paragraph>
+                </TableRow>
+              ))}
+          </Table>
+        </HStack>
+      )}
+
+      {popular && (
+        <Table columns={['Path', 'Unique', 'Total']}>
+          {popular
+            .filter((pp) => pp.path)
+            .slice(0, 10)
+            .map((pp) => (
               <TableRow key={pp.path}>
                 <Link external to={`${pp.host}${pp.path}`}>
                   {`${pp.path}`}
@@ -90,25 +119,12 @@ const Home: React.FC = () => {
                 <Paragraph>{pp.total}</Paragraph>
               </TableRow>
             ))}
-          </Table>
-        )}
-
-        {popularCountries && (
-          <Table columns={['Country', 'Unique', 'Total']} className="w-1/3">
-            {popularCountries.map((pp) => (
-              <TableRow key={pp.country}>
-                <Paragraph>{pp.country}</Paragraph>
-                <Paragraph>{pp.unique}</Paragraph>
-                <Paragraph>{pp.total}</Paragraph>
-              </TableRow>
-            ))}
-          </Table>
-        )}
-      </HStack>
+        </Table>
+      )}
 
       {pageviews && (
         <Table columns={['Date', 'Path', 'Country', 'Screen', 'SID']}>
-          {pageviews.map((pv) => (
+          {pageviews.slice(0, 10).map((pv) => (
             <TableRow key={pv.id}>
               <Paragraph>
                 {capitalize(formatRelative(pv.createdAt, new Date()))}

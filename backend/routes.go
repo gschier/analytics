@@ -35,8 +35,8 @@ func SetupRouter() http.Handler {
 		RespondJSON(w, &counts)
 	})
 
-	r.Path("/api/rollups/pageviews/countries").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		counts := FindAnalyticsPageviewsPopularCountries(
+	r.Path("/api/rollups/pageviews/popular").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		counts := FindAnalyticsPageviewsPopularThings(
 			GetDB(),
 			r.Context(),
 			time.Now().Add(-24*7*time.Hour+time.Hour),

@@ -198,10 +198,13 @@ type PathCount struct {
 	Host   string `db:"host" json:"host"`
 }
 
-type CountryCount struct {
-	Total   int64  `db:"count_total" json:"total"`
-	Unique  int64  `db:"count_unique" json:"unique"`
-	Country string `db:"country_code" json:"country"`
+type ThingsCount struct {
+	Total      int64   `db:"count_total" json:"total"`
+	Unique     int64   `db:"count_unique" json:"unique"`
+	Host       *string `db:"host" json:"host"`
+	Path       *string `db:"path" json:"path"`
+	Country    *string `db:"country_code" json:"country"`
+	ScreenSize *string `db:"screen_size" json:"screenSize"`
 }
 
 func FindAnalyticsPageviewsPopularPages(db DBLike, ctx context.Context, start, end time.Time, websiteID string) []PathCount {
@@ -224,11 +227,14 @@ func FindAnalyticsPageviewsPopularPages(db DBLike, ctx context.Context, start, e
 	return counts
 }
 
-func FindAnalyticsPageviewsPopularCountries(db DBLike, ctx context.Context, start, end time.Time, websiteID string) []CountryCount {
-	var counts []CountryCount
+func FindAnalyticsPageviewsPopularThings(db DBLike, ctx context.Context, start, end time.Time, websiteID string) []ThingsCount {
+	var counts []ThingsCount
 
 	dbMany(db, ctx, &counts, `
-		SELECT country_code,
+		SELECT screen_size, 
+		       path,
+		       host,
+		       country_code,
 			   COUNT(id)           AS count_total,
 			   COUNT(DISTINCT sid) AS count_unique
 		FROM analytics_pageviews
@@ -236,9 +242,9 @@ func FindAnalyticsPageviewsPopularCountries(db DBLike, ctx context.Context, star
 		  AND website_id = $1
 		  AND created_at >= $2
 		  AND created_at < $3
-		GROUP BY country_code
+		GROUP BY GROUPING SETS (screen_size, country_code, (path, host))
 		ORDER BY count_unique DESC
-		LIMIT 10;
+		LIMIT 50;
 	`, websiteID, start, end)
 
 	return counts
