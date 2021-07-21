@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
@@ -15,13 +16,6 @@ type Account struct {
 	Email          string    `db:"email"           json:"email"`
 	HashedPassword string    `db:"hashed_password" json:"-"`
 }
-
-// type Session struct {
-// 	ID          string    `db:"id"           json:"id"`
-// 	AccountID   string    `db:"account_id"   json:"accountId"`
-// 	CreatedAt   time.Time `db:"created_at"   json:"createdAt"`
-// 	RefreshedAt time.Time `db:"refreshed_at" json:"refreshedAt"`
-// }
 
 type Website struct {
 	ID        string    `db:"id"         json:"id"`
@@ -51,47 +45,21 @@ type AnalyticsPageview struct {
 	UserAgent   string    `db:"user_agent"   json:"userAgent"`
 }
 
-type DBLike interface {
-	SelectContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
-	GetContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
-	NamedExecContext(ctx context.Context, query string, arg interface{}) (sql.Result, error)
-	ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
-}
-
-func dbMany(db DBLike, ctx context.Context, dest interface{}, query string, args ...interface{}) {
-	err := db.SelectContext(ctx, dest, query, args...)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func dbOne(db DBLike, ctx context.Context, dest interface{}, query string, args ...interface{}) bool {
-	err := db.GetContext(ctx, dest, query, args...)
+func GetAccountByEmail(db sqlx.QueryerContext, ctx context.Context, email string) (*Account, bool) {
+	var account Account
+	err := sqlx.GetContext(ctx, db, &account, `
+		SELECT * FROM accounts WHERE email = $1
+	`, email)
 	if err == sql.ErrNoRows {
-		return false
+		return nil, false
 	} else if err != nil {
 		panic(err)
 	}
 
-	return true
+	return &account, true
 }
 
-func dbExec(db DBLike, ctx context.Context, query string, arg interface{}) {
-	_, err := db.NamedExecContext(ctx, query, arg)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func GetAccountByEmail(db DBLike, ctx context.Context, email string) (*Account, bool) {
-	var account Account
-	ok := dbOne(db, ctx, &account, `
-		SELECT * FROM accounts WHERE email = $1
-	`, email)
-	return &account, ok
-}
-
-func CreateAccount(db DBLike, ctx context.Context, email, password string) *Account {
+func CreateAccount(db sqlx.ExtContext, ctx context.Context, email, password string) *Account {
 	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		panic(err)
@@ -105,25 +73,18 @@ func CreateAccount(db DBLike, ctx context.Context, email, password string) *Acco
 		HashedPassword: fmt.Sprintf("%s", hashed),
 	}
 
-	dbExec(db, ctx, `
+	_, err = sqlx.NamedExecContext(ctx, db, `
 		INSERT INTO accounts (id, created_at, updated_at, email, hashed_password)
 		VALUES (:id, :created_at, :updated_at, :email, :hashed_password)
 	`, &account)
+	if err != nil {
+		panic(err)
+	}
 
 	return &account
 }
 
-// func FindAnalyticsEvents(db DBLike, ctx context.Context, websiteID string) []AnalyticsEvent {
-// 	var events []AnalyticsEvent
-// 	dbMany(db, ctx, &events, `
-// 		SELECT * FROM analytics_events
-// 		WHERE website_id = $1
-// 		ORDER BY created_at DESC
-// 	`, websiteID)
-// 	return events
-// }
-
-func CreateAnalyticsEvent(db DBLike, ctx context.Context, id, sid, websiteID, name string) *AnalyticsEvent {
+func CreateAnalyticsEvent(db sqlx.ExtContext, ctx context.Context, id, sid, websiteID, name string) *AnalyticsEvent {
 	event := AnalyticsEvent{
 		ID:        id,
 		SID:       sid,
@@ -132,26 +93,32 @@ func CreateAnalyticsEvent(db DBLike, ctx context.Context, id, sid, websiteID, na
 		Name:      name,
 	}
 
-	dbExec(db, ctx, `
+	_, err := sqlx.NamedExecContext(ctx, db, `
 		INSERT INTO analytics_events (id, sid, website_id, created_at, name) 
 		VALUES (:id, :sid, :website_id, :created_at, :name)
 	`, &event)
+	if err != nil {
+		panic(err)
+	}
 
 	return &event
 }
 
-func FindAnalyticsPageviews(db DBLike, ctx context.Context, websiteID string) []AnalyticsPageview {
+func FindAnalyticsPageviews(db sqlx.QueryerContext, ctx context.Context, websiteID string) []AnalyticsPageview {
 	var pageviews []AnalyticsPageview
-	dbMany(db, ctx, &pageviews, `
+	err := sqlx.SelectContext(ctx, db, &pageviews, `
 		SELECT * FROM analytics_pageviews 
 		WHERE website_id = $1
 		ORDER BY created_at DESC
 		LIMIT 20
 	`, websiteID)
+	if err != nil {
+		panic(err)
+	}
 	return pageviews
 }
 
-func FindAnalyticsPageviewsHourly(db DBLike, ctx context.Context, start, end time.Time, websiteID string) []Bucket {
+func FindAnalyticsPageviewsHourly(db sqlx.QueryerContext, ctx context.Context, start, end time.Time, websiteID string) []Bucket {
 	type count struct {
 		Total  int64     `db:"count_total"`
 		Unique int64     `db:"count_unique"`
@@ -159,7 +126,7 @@ func FindAnalyticsPageviewsHourly(db DBLike, ctx context.Context, start, end tim
 	}
 
 	var counts []count
-	dbMany(db, ctx, &counts, `
+	err := sqlx.SelectContext(ctx, db, &counts, `
 		SELECT COUNT(id)                                                                                AS count_total,
 			   COUNT(DISTINCT sid)                                                                      AS count_unique,
 			   TO_TIMESTAMP(FLOOR((EXTRACT('epoch' FROM created_at) / 3600)) * 3600) AT TIME ZONE 'UTC' AS bucket
@@ -167,6 +134,9 @@ func FindAnalyticsPageviewsHourly(db DBLike, ctx context.Context, start, end tim
 		WHERE website_id = $1 AND created_at >= $2 AND created_at < $3
 		GROUP BY bucket;
 	`, websiteID, start, end)
+	if err != nil {
+		panic(err)
+	}
 
 	// Iterate over all buckets, to make sure we create ones for periods with no events
 	buckets := make([]Bucket, end.Sub(start)/time.Hour)
@@ -207,10 +177,10 @@ type ThingsCount struct {
 	ScreenSize *string `db:"screen_size" json:"screenSize"`
 }
 
-func FindAnalyticsPageviewsPopularPages(db DBLike, ctx context.Context, start, end time.Time, websiteID string) []PathCount {
+func FindAnalyticsPageviewsPopularPages(db sqlx.QueryerContext, ctx context.Context, start, end time.Time, websiteID string) []PathCount {
 	var counts []PathCount
 
-	dbMany(db, ctx, &counts, `
+	err := sqlx.SelectContext(ctx, db, &counts, `
 		SELECT path,
 		       host,
 			   COUNT(id)           AS count_total,
@@ -223,14 +193,17 @@ func FindAnalyticsPageviewsPopularPages(db DBLike, ctx context.Context, start, e
 		ORDER BY count_unique DESC
 		LIMIT 10;
 	`, websiteID, start, end)
+	if err != nil {
+		panic(err)
+	}
 
 	return counts
 }
 
-func FindAnalyticsPageviewsPopularThings(db DBLike, ctx context.Context, start, end time.Time, websiteID string) []ThingsCount {
+func FindAnalyticsPageviewsPopularThings(db sqlx.QueryerContext, ctx context.Context, start, end time.Time, websiteID string) []ThingsCount {
 	var counts []ThingsCount
 
-	dbMany(db, ctx, &counts, `
+	err := sqlx.SelectContext(ctx, db, &counts, `
 		SELECT screen_size, 
 		       path,
 		       host,
@@ -246,11 +219,14 @@ func FindAnalyticsPageviewsPopularThings(db DBLike, ctx context.Context, start, 
 		ORDER BY count_unique DESC
 		LIMIT 50;
 	`, websiteID, start, end)
+	if err != nil {
+		panic(err)
+	}
 
 	return counts
 }
 
-func CreateAnalyticsPageview(db DBLike, ctx context.Context, id, sid, websiteID, host, path, screensize, country, userAgent string) *AnalyticsPageview {
+func CreateAnalyticsPageview(db sqlx.ExtContext, ctx context.Context, id, sid, websiteID, host, path, screensize, country, userAgent string) *AnalyticsPageview {
 	pageview := AnalyticsPageview{
 		ID:          id,
 		CreatedAt:   time.Now(),
@@ -262,14 +238,17 @@ func CreateAnalyticsPageview(db DBLike, ctx context.Context, id, sid, websiteID,
 		CountryCode: country,
 		UserAgent:   userAgent,
 	}
-	dbExec(db, ctx, `
+	_, err := sqlx.NamedExecContext(ctx, db, `
 		INSERT INTO analytics_pageviews (id, website_id, sid, created_at, host, path, screen_size, country_code, user_agent) 
 		VALUES (:id, :website_id, :sid, :created_at, :host, :path, :screen_size, :country_code, :user_agent)
 	`, &pageview)
+	if err != nil {
+		panic(err)
+	}
 	return &pageview
 }
 
-func CreateWebsite(db DBLike, ctx context.Context, accountID, domain string) *Website {
+func CreateWebsite(db sqlx.ExtContext, ctx context.Context, accountID, domain string) *Website {
 	website := Website{
 		ID:        newID("site_"),
 		CreatedAt: time.Now(),
@@ -277,18 +256,24 @@ func CreateWebsite(db DBLike, ctx context.Context, accountID, domain string) *We
 		AccountId: accountID,
 		Domain:    domain,
 	}
-	dbExec(db, ctx, `
+	_, err := sqlx.NamedExecContext(ctx, db, `
 		INSERT INTO websites (id, account_id, created_at, updated_at, domain) 
 		VALUES (:id, :account_id, :created_at, :updated_at, :domain) 
 	`, &website)
+	if err != nil {
+		panic(err)
+	}
 	return &website
 }
 
-func FindWebsitesByAccountID(db DBLike, ctx context.Context, accountID string) []Website {
+func FindWebsitesByAccountID(db sqlx.QueryerContext, ctx context.Context, accountID string) []Website {
 	var websites []Website
-	dbMany(db, ctx, &websites, `
+	err := sqlx.SelectContext(ctx, db, &websites, `
 		SELECT * FROM websites
 		WHERE account_id = $1;
 	`, accountID)
+	if err != nil {
+		panic(err)
+	}
 	return websites
 }

@@ -10,7 +10,7 @@ import (
 
 var _db *sqlx.DB
 
-func GetDB() DBLike {
+func GetDB() *sqlx.DB {
 	if _db == nil {
 		_db = sqlx.MustConnect("postgres", Config.DatabaseURL)
 	}
@@ -20,7 +20,7 @@ func GetDB() DBLike {
 type Migration struct {
 	Number  int
 	Name    string
-	Forward func(ctx context.Context, db DBLike) error
+	Forward func(ctx context.Context, db *sqlx.DB) error
 }
 
 type dbRow struct {
@@ -29,14 +29,14 @@ type dbRow struct {
 	AppliedAt time.Time `db:"applied_at"`
 }
 
-func mustMigrate(ctx context.Context, db DBLike) {
+func mustMigrate(ctx context.Context, db *sqlx.DB) {
 	err := migrate(ctx, db)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func migrate(ctx context.Context, db DBLike) error {
+func migrate(ctx context.Context, db *sqlx.DB) error {
 	fmt.Printf("[migrate] Running database migrations\n")
 
 	// Create migrations table if it doesn't exist
@@ -100,7 +100,7 @@ func migrate(ctx context.Context, db DBLike) error {
 
 var migrations = []Migration{{
 	Name: "create_tables",
-	Forward: func(ctx context.Context, db DBLike) error {
+	Forward: func(ctx context.Context, db *sqlx.DB) error {
 		_, err := db.ExecContext(ctx, `
 			CREATE TABLE accounts (
 			    id              VARCHAR(40)  PRIMARY KEY ,
