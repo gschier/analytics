@@ -5,6 +5,7 @@ import reactRefresh from '@vitejs/plugin-react-refresh';
 export default defineConfig({
   plugins: [reactRefresh()],
   server: {
+    port: 3242,
     proxy: {
       '/api': {
         target: 'http://localhost:7194',
