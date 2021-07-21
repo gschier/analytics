@@ -14,10 +14,10 @@ func SetupRouter() http.Handler {
 	})
 
 	r.Path("/api/rollups/pageviews").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		rollups := FindAnalyticsPageviewsHourly(
+		rollups := FindAnalyticsPageviewsBuckets(
 			GetDB(),
 			r.Context(),
-			time.Now().Add(-24*7*time.Hour+time.Hour),
+			time.Now().Add(-24*time.Hour+time.Hour),
 			time.Now().Add(time.Hour),
 			ensureDummyWebsite(),
 		)

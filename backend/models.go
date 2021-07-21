@@ -118,7 +118,7 @@ func FindAnalyticsPageviews(db sqlx.QueryerContext, ctx context.Context, website
 	return pageviews
 }
 
-func FindAnalyticsPageviewsHourly(db sqlx.QueryerContext, ctx context.Context, start, end time.Time, websiteID string) []Bucket {
+func FindAnalyticsPageviewsBuckets(db sqlx.QueryerContext, ctx context.Context, start, end time.Time, websiteID string) []Bucket {
 	type count struct {
 		Total  int64     `db:"count_total"`
 		Unique int64     `db:"count_unique"`
