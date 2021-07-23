@@ -12,22 +12,20 @@ type Bucket struct {
 	Unique int64     `json:"unique"`
 }
 
-type RollupPeriod int
-
 const (
-	PeriodDay    = RollupPeriod(time.Hour * 24)
-	PeriodHour   = RollupPeriod(time.Hour)
-	PeriodMinute = RollupPeriod(time.Minute)
+	PeriodDay    = time.Hour * 24
+	PeriodHour   = time.Hour
+	PeriodMinute = time.Minute
 )
 
-func GetBucketStart(t time.Time, period RollupPeriod) time.Time {
+func CeilToPeriod(t time.Time, period time.Duration) time.Time {
 	if period == PeriodDay {
-		return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
+		return time.Date(t.Year(), t.Month(), t.Day()+1, 0, 0, 0, 0, time.UTC)
 	} else if period == PeriodHour {
-		return time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), 0, 0, 0, t.Location())
+		return time.Date(t.Year(), t.Month(), t.Day(), t.Hour()+1, 0, 0, 0, time.UTC)
 	} else if period == PeriodMinute {
-		return time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), 0, 0, t.Location())
+		return time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute()+1, 0, 0, time.UTC)
 	}
 
-	panic(fmt.Sprintf("Invalid rollup period %s", time.Duration(period)))
+	panic(fmt.Sprintf("Invalid rollup period %s", period))
 }

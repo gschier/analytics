@@ -118,32 +118,37 @@ func FindAnalyticsPageviews(db sqlx.QueryerContext, ctx context.Context, website
 	return pageviews
 }
 
-func FindAnalyticsPageviewsBuckets(db sqlx.QueryerContext, ctx context.Context, start, end time.Time, websiteID string) []Bucket {
-	type count struct {
+func FindAnalyticsPageviewsBuckets(db sqlx.QueryerContext, ctx context.Context, start, end time.Time, period time.Duration, websiteID string) []Bucket {
+	var counts []struct {
 		Total  int64     `db:"count_total"`
 		Unique int64     `db:"count_unique"`
 		Bucket time.Time `db:"bucket"`
 	}
 
-	var counts []count
+	startCeil := CeilToPeriod(start, period)
+	endCeil := CeilToPeriod(end, period)
+
 	err := sqlx.SelectContext(ctx, db, &counts, `
-		SELECT COUNT(id)                                                                                AS count_total,
-			   COUNT(DISTINCT sid)                                                                      AS count_unique,
-			   TO_TIMESTAMP(FLOOR((EXTRACT('epoch' FROM created_at) / 3600)) * 3600) AT TIME ZONE 'UTC' AS bucket
+		SELECT COUNT(id)                                                                            AS count_total,
+			   COUNT(DISTINCT sid)                                                                  AS count_unique,
+			   TO_TIMESTAMP(FLOOR((EXTRACT('epoch' FROM created_at) / $4)) * $4) AT TIME ZONE 'UTC' AS bucket
 		FROM analytics_pageviews
 		WHERE website_id = $1 AND created_at >= $2 AND created_at < $3
 		GROUP BY bucket;
-	`, websiteID, start, end)
+	`, websiteID, startCeil, endCeil, int(period.Seconds()))
 	if err != nil {
 		panic(err)
 	}
 
 	// Iterate over all buckets, to make sure we create ones for periods with no events
-	buckets := make([]Bucket, end.Sub(start)/time.Hour)
-	startFloored := GetBucketStart(start, PeriodHour)
+	buckets := make([]Bucket, end.Sub(start)/period)
+
 	for i := 0; i < len(buckets); i++ {
-		bucketStart := startFloored.Add(time.Duration(i) * time.Hour)
-		bucket := Bucket{Start: bucketStart, End: bucketStart.Add(time.Hour)}
+		bucketStart := startCeil.Add(time.Duration(i) * period)
+		bucket := Bucket{
+			Start: bucketStart,
+			End:   bucketStart.Add(period),
+		}
 
 		// Try to find a count for the bucket. If so, fill it in
 		for _, c := range counts {

@@ -17,8 +17,9 @@ func SetupRouter() http.Handler {
 		rollups := FindAnalyticsPageviewsBuckets(
 			GetDB(),
 			r.Context(),
-			time.Now().Add(-24*time.Hour+time.Hour),
-			time.Now().Add(time.Hour),
+			time.Now().Add(-7*PeriodDay),
+			time.Now(),
+			PeriodDay,
 			ensureDummyWebsite(),
 		)
 		RespondJSON(w, &rollups)

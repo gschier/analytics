@@ -17,6 +17,7 @@ import useStateLocalStorage from '../hooks/use-state-localstorage';
 import Button from '../components/Button';
 import { Helmet } from 'react-helmet';
 import usePopularCountries from '../hooks/use-popular-countries';
+import { dateBetween } from '../util/date';
 
 const Home: React.FC = () => {
   const [theme, setTheme] = useStateLocalStorage<'dark' | 'light'>(
@@ -63,11 +64,11 @@ const Home: React.FC = () => {
                 width={width}
                 height={height}
                 data={rollups.map((r) => ({
-                  date: r.start.toISOString(),
+                  date: dateBetween(r.start, r.end).toISOString(),
                   close: r.unique,
                 }))}
                 data2={rollups.map((r) => ({
-                  date: r.start.toISOString(),
+                  date: dateBetween(r.start, r.end).toISOString(),
                   close: r.total,
                 }))}
               />
@@ -77,8 +78,8 @@ const Home: React.FC = () => {
       </div>
 
       {popular && (
-        <HStack space={3} align="start">
-          <Table columns={['Country', 'Unique', 'Total']} className="w-1/2">
+        <HStack collapse space={3} align="start">
+          <Table columns={['Country', 'Unique', 'Total']}>
             {popular
               .filter((pp) => pp.country)
               .slice(0, 6)
@@ -90,7 +91,7 @@ const Home: React.FC = () => {
                 </TableRow>
               ))}
           </Table>
-          <Table columns={['Screen Size', 'Unique', 'Total']} className="w-1/2">
+          <Table columns={['Screen Size', 'Unique', 'Total']}>
             {popular
               .filter((pp) => pp.screenSize)
               .slice(0, 6)

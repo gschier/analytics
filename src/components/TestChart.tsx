@@ -83,7 +83,7 @@ export default withTooltip<AreaProps, TooltipData>(
       () =>
         scaleLinear({
           range: [innerHeight + margin.top, margin.top],
-          domain: [0, (max(stock, getStockValue) || 0) + innerHeight / 10],
+          domain: [0, (max(stock2, getStockValue) || 0) + innerHeight / 10],
           nice: true,
         }),
       [margin.top, innerHeight],

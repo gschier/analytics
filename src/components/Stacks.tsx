@@ -80,18 +80,15 @@ export const VStack: React.FC<StackProps & HTMLAttributes<HTMLDivElement>> = ({
   />
 );
 
-export const HStack: React.FC<StackProps & HTMLAttributes<HTMLDivElement>> = ({
-  className,
-  space,
-  justify,
-  align,
-  wrap,
-  ...props
-}) => (
+export const HStack: React.FC<
+  StackProps & { collapse?: boolean } & HTMLAttributes<HTMLDivElement>
+> = ({ className, space, justify, align, wrap, collapse, ...props }) => (
   <div
     {...props}
     className={classnames(
-      'w-full flex flex-row',
+      'w-full flex',
+      collapse && 'flex-col sm:flex-row',
+      !collapse && 'flex-row',
       space === undefined ? '' : spaces[space],
       justifyValues[justify ?? 'start'],
       alignValues[align ?? 'end'],
