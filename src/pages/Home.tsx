@@ -1,44 +1,42 @@
-import React from 'react';
-import { formatRelative } from 'date-fns';
-import { HStack, VStack } from '../components/Stacks';
-import Title from '../components/Title';
-import ParentSize from '@visx/responsive/lib/components/ParentSize';
-import TestChart from '../components/TestChart';
-import usePageviews from '../hooks/use-pageviews';
-import Card from '../components/Card';
-import useRollups from '../hooks/use-rollups';
-import { Table, TableRow } from '../components/Table';
-import { HugeText, Paragraph } from '../components/Typography';
-import { capitalize } from '../util/text';
-import Link from '../components/Link';
-import useCurrentUsers from '../hooks/use-current-users';
-import useUniqueVisitors from '../hooks/use-unique-visitors';
-import useStateLocalStorage from '../hooks/use-state-localstorage';
-import Button from '../components/Button';
-import { Helmet } from 'react-helmet';
-import usePopularCountries from '../hooks/use-popular-countries';
-import { dateBetween } from '../util/date';
+import React from "react";
+import { HStack, VStack } from "../components/Stacks";
+import Title from "../components/Title";
+import ParentSize from "@visx/responsive/lib/components/ParentSize";
+import TestChart from "../components/TestChart";
+import Card from "../components/Card";
+import useRollups from "../hooks/use-rollups";
+import { Table, TableRow } from "../components/Table";
+import { HugeText, Paragraph } from "../components/Typography";
+import { capitalize } from "../util/text";
+import Link from "../components/Link";
+import useCurrentUsers from "../hooks/use-current-users";
+import useSummaryStats from "../hooks/use-summary-stats";
+import useStateLocalStorage from "../hooks/use-state-localstorage";
+import Button from "../components/Button";
+import { Helmet } from "react-helmet";
+import usePopular from "../hooks/use-popular";
+import { dateBetween } from "../util/date";
 
 const Home: React.FC = () => {
-  const [theme, setTheme] = useStateLocalStorage<'dark' | 'light'>(
-    'theme',
-    'light',
+  const [ theme, setTheme ] = useStateLocalStorage<"dark" | "light">(
+    "theme",
+    "light",
   );
-  const { data: pageviews } = usePageviews();
   const { data: rollups } = useRollups();
-  const { data: popular } = usePopularCountries();
+  const { data: popular } = usePopular();
   const currentUsers = useCurrentUsers();
-  const uniqueVisitors = useUniqueVisitors();
+  console.log(currentUsers);
+  const summaryStats = useSummaryStats();
 
   return (
     <VStack space={6} className="m-4">
       <Helmet>
-        <html className={theme} />
+        <html className={theme}/>
       </Helmet>
       <HStack>
         <Title>Analytics</Title>
         <Button
-          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           className="ml-auto">
           {capitalize(theme)} Mode
         </Button>
@@ -46,13 +44,13 @@ const Home: React.FC = () => {
 
       <HStack space={3}>
         <Card title="Live" className="w-full">
-          <HugeText>{currentUsers}</HugeText>
+          <HugeText>{currentUsers.data}</HugeText>
         </Card>
         <Card title="Visitors" className="w-full">
-          <HugeText>{uniqueVisitors}</HugeText>
+          <HugeText>{summaryStats?.unique}</HugeText>
         </Card>
         <Card title="Views" className="w-full">
-          <HugeText>{pageviews ? pageviews.length : <>&nbsp;</>}</HugeText>
+          <HugeText>{summaryStats?.total}</HugeText>
         </Card>
       </HStack>
 
@@ -79,7 +77,7 @@ const Home: React.FC = () => {
 
       {popular && (
         <HStack collapse space={3} align="start">
-          <Table columns={['Country', 'Unique', 'Total']}>
+          <Table columns={[ "Country", "Unique", "Total" ]}>
             {popular
               .filter((pp) => pp.country)
               .slice(0, 6)
@@ -91,7 +89,7 @@ const Home: React.FC = () => {
                 </TableRow>
               ))}
           </Table>
-          <Table columns={['Screen Size', 'Unique', 'Total']}>
+          <Table columns={[ "Screen Size", "Unique", "Total" ]}>
             {popular
               .filter((pp) => pp.screenSize)
               .slice(0, 6)
@@ -107,7 +105,7 @@ const Home: React.FC = () => {
       )}
 
       {popular && (
-        <Table columns={['Path', 'Unique', 'Total']}>
+        <Table columns={[ "Path", "Unique", "Total" ]}>
           {popular
             .filter((pp) => pp.path)
             .slice(0, 10)
@@ -120,24 +118,6 @@ const Home: React.FC = () => {
                 <Paragraph>{pp.total}</Paragraph>
               </TableRow>
             ))}
-        </Table>
-      )}
-
-      {pageviews && (
-        <Table columns={['Date', 'Path', 'Country', 'Screen', 'SID']}>
-          {pageviews.slice(0, 10).map((pv) => (
-            <TableRow key={pv.id}>
-              <Paragraph>
-                {capitalize(formatRelative(pv.createdAt, new Date()))}
-              </Paragraph>
-              <Link external to={`${pv.host}${pv.path}`}>
-                {`${pv.path}`}
-              </Link>
-              <Paragraph>{pv.countryCode}</Paragraph>
-              <Paragraph>{pv.screenSize}</Paragraph>
-              <Paragraph>{pv.sid.slice(0, 5)}</Paragraph>
-            </TableRow>
-          ))}
         </Table>
       )}
     </VStack>

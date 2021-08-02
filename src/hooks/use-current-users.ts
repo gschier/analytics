@@ -1,15 +1,13 @@
-import usePageviews from './use-pageviews';
+import { useQuery } from "react-query";
 
-const useCurrentUsers = () => {
-  const sids = new Set();
-  for (const pv of usePageviews().data || []) {
-    const millis = Date.now() - pv.createdAt.getTime();
-    if (millis > 1000 * 60 * 5) {
-      continue;
-    }
-    sids.add(pv.sid);
-  }
-  return sids.size;
-};
+const useCurrentUsers = () =>
+  useQuery<number>(
+    [ "pageviews", "current" ],
+    async () => {
+      const res = await fetch("/api/live");
+      return res.json();
+    },
+    {},
+  );
 
 export default useCurrentUsers;

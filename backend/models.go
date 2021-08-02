@@ -104,18 +104,31 @@ func CreateAnalyticsEvent(db sqlx.ExtContext, ctx context.Context, id, sid, webs
 	return &event
 }
 
-func FindAnalyticsPageviews(db sqlx.QueryerContext, ctx context.Context, websiteID string) []AnalyticsPageview {
-	var pageviews []AnalyticsPageview
-	err := sqlx.SelectContext(ctx, db, &pageviews, `
-		SELECT * FROM analytics_pageviews 
-		WHERE website_id = $1
-		ORDER BY created_at DESC
+//func FindAnalyticsPageviews(db sqlx.QueryerContext, ctx context.Context, websiteID string) []AnalyticsPageview {
+//	var pageviews []AnalyticsPageview
+//	err := sqlx.SelectContext(ctx, db, &pageviews, `
+//		SELECT * FROM analytics_pageviews
+//		WHERE website_id = $1
+//		ORDER BY created_at DESC
+//		LIMIT 20
+//	`, websiteID)
+//	if err != nil {
+//		panic(err)
+//	}
+//	return pageviews
+//}
+
+func CountAnalyticsPageviewsRecent(db sqlx.QueryerContext, ctx context.Context, websiteID string) int64 {
+	var count int64
+	err := sqlx.GetContext(ctx, db, &count, `
+		SELECT COUNT(*) FROM analytics_pageviews 
+		WHERE website_id = $1 AND created_at > (NOW() - INTERVAL '5 minutes')
 		LIMIT 20
 	`, websiteID)
 	if err != nil {
 		panic(err)
 	}
-	return pageviews
+	return count
 }
 
 func FindAnalyticsPageviewsBuckets(db sqlx.QueryerContext, ctx context.Context, start, end time.Time, period time.Duration, websiteID string) []Bucket {
@@ -166,14 +179,7 @@ func FindAnalyticsPageviewsBuckets(db sqlx.QueryerContext, ctx context.Context, 
 	return buckets
 }
 
-type PathCount struct {
-	Total  int64  `db:"count_total" json:"total"`
-	Unique int64  `db:"count_unique" json:"unique"`
-	Path   string `db:"path" json:"path"`
-	Host   string `db:"host" json:"host"`
-}
-
-type ThingsCount struct {
+type PopularCount struct {
 	Total      int64   `db:"count_total" json:"total"`
 	Unique     int64   `db:"count_unique" json:"unique"`
 	Host       *string `db:"host" json:"host"`
@@ -182,32 +188,8 @@ type ThingsCount struct {
 	ScreenSize *string `db:"screen_size" json:"screenSize"`
 }
 
-func FindAnalyticsPageviewsPopularPages(db sqlx.QueryerContext, ctx context.Context, start, end time.Time, websiteID string) []PathCount {
-	var counts []PathCount
-
-	err := sqlx.SelectContext(ctx, db, &counts, `
-		SELECT path,
-		       host,
-			   COUNT(id)           AS count_total,
-			   COUNT(DISTINCT sid) AS count_unique
-		FROM analytics_pageviews
-		WHERE website_id = $1
-		  AND created_at >= $2
-		  AND created_at < $3
-		GROUP BY path, host
-		ORDER BY count_unique DESC
-		LIMIT 10;
-	`, websiteID, start, end)
-	if err != nil {
-		panic(err)
-	}
-
-	return counts
-}
-
-func FindAnalyticsPageviewsPopularThings(db sqlx.QueryerContext, ctx context.Context, start, end time.Time, websiteID string) []ThingsCount {
-	var counts []ThingsCount
-
+func FindAnalyticsPageviewsPopular(db sqlx.QueryerContext, ctx context.Context, start, end time.Time, websiteID string) []PopularCount {
+	var counts []PopularCount
 	err := sqlx.SelectContext(ctx, db, &counts, `
 		SELECT screen_size, 
 		       path,
@@ -220,7 +202,12 @@ func FindAnalyticsPageviewsPopularThings(db sqlx.QueryerContext, ctx context.Con
 		  AND website_id = $1
 		  AND created_at >= $2
 		  AND created_at < $3
-		GROUP BY GROUPING SETS (screen_size, country_code, (path, host))
+		GROUP BY GROUPING SETS (
+		  (screen_size), 
+		  (country_code), 
+		  (path, host), 
+		  ()
+	  	)
 		ORDER BY count_unique DESC
 		LIMIT 50;
 	`, websiteID, start, end)

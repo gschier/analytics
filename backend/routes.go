@@ -28,8 +28,8 @@ func SetupRouter() http.Handler {
 		RespondJSON(w, &rollups)
 	})
 
-	r.Path("/api/rollups/pageviews/paths").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		counts := FindAnalyticsPageviewsPopularPages(
+	r.Path("/api/popular").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		counts := FindAnalyticsPageviewsPopular(
 			GetDB(),
 			r.Context(),
 			start,
@@ -39,20 +39,9 @@ func SetupRouter() http.Handler {
 		RespondJSON(w, &counts)
 	})
 
-	r.Path("/api/rollups/pageviews/popular").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		counts := FindAnalyticsPageviewsPopularThings(
-			GetDB(),
-			r.Context(),
-			start,
-			end,
-			ensureDummyWebsite(),
-		)
-		RespondJSON(w, &counts)
-	})
-
-	r.Path("/api/pageviews").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		pageviews := FindAnalyticsPageviews(GetDB(), r.Context(), ensureDummyWebsite())
-		RespondJSON(w, &pageviews)
+	r.Path("/api/live").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		count := CountAnalyticsPageviewsRecent(GetDB(), r.Context(), ensureDummyWebsite())
+		RespondJSON(w, &count)
 	})
 
 	r.Path("/api/event").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

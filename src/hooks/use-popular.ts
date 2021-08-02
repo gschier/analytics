@@ -1,6 +1,6 @@
 import { useQuery } from 'react-query';
 
-export interface CountryCount {
+export interface PopularCount {
   country: string;
   screenSize: string;
   path: string | null;
@@ -9,14 +9,14 @@ export interface CountryCount {
   unique: number | null;
 }
 
-const usePopularCountries = () =>
-  useQuery<CountryCount[]>(
-    ['pageviews', 'popular', 'countries'],
+const usePopular = () =>
+  useQuery<PopularCount[]>(
+    ['pageviews', 'popular'],
     async () => {
-      const res = await fetch('/api/rollups/pageviews/popular');
+      const res = await fetch('/api/popular');
       return res.json();
     },
     {},
   );
 
-export default usePopularCountries;
+export default usePopular;
