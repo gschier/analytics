@@ -1,3 +1,3 @@
 # Analytics
 
-An alright open-source analytics tool.
+An alright, open-source analytics tool.
