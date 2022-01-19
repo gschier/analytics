@@ -13,15 +13,12 @@ func SetupRouter() http.Handler {
 		http.ServeFile(w, r, "./dist/tracker.js")
 	})
 
-	start := time.Now().Add(-7 * PeriodDay)
-	end := time.Now()
-
 	r.Path("/api/rollups/pageviews").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		rollups := FindAnalyticsPageviewsBuckets(
 			GetDB(),
 			r.Context(),
-			start,
-			end,
+			start(),
+			end(),
 			PeriodHour,
 			ensureDummyWebsite(),
 		)
@@ -32,8 +29,8 @@ func SetupRouter() http.Handler {
 		counts := FindAnalyticsPageviewsPopular(
 			GetDB(),
 			r.Context(),
-			start,
-			end,
+			start(),
+			end(),
 			ensureDummyWebsite(),
 		)
 		RespondJSON(w, &counts)
@@ -77,4 +74,12 @@ func SetupRouter() http.Handler {
 	})
 
 	return r
+}
+
+func start() time.Time {
+	return time.Now().Add(-7 * PeriodDay)
+}
+
+func end() time.Time {
+	return time.Now()
 }
