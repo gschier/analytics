@@ -72,7 +72,7 @@ func SetupRouter() http.Handler {
 	})
 
 	r.PathPrefix("/assets").Handler(http.FileServer(http.Dir("./dist")))
-	r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	r.Path("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/site/"+ensureDummyWebsite(), http.StatusFound)
 	})
 	r.PathPrefix("/site").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
