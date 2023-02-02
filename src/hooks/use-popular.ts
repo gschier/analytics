@@ -9,11 +9,11 @@ export interface PopularCount {
   unique: number | null;
 }
 
-const usePopular = () =>
+const usePopular = (siteId: string) =>
   useQuery<PopularCount[]>(
     ['pageviews', 'popular'],
     async () => {
-      const res = await fetch('/api/popular');
+      const res = await fetch(`/api/popular?site=${siteId}`);
       return res.json();
     },
     {},

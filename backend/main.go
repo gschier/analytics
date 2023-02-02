@@ -36,7 +36,7 @@ func ensureDummyWebsite() string {
 	}
 
 	a := CreateAccount(GetDB(), context.Background(), "greg@schier.co", "my-pass!")
-	w := CreateWebsite(GetDB(), context.Background(), a.ID, "My Blog")
+	w := CreateWebsite(GetDB(), context.Background(), a.ID, "schier.co")
 
 	return w.ID
 }

@@ -9,7 +9,7 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:7194',
-        // target: 'https://analytics-production.up.railway.app',
+        // target: 'https://analytics.schier.dev',
         changeOrigin: true,
       },
       '/script.js': {

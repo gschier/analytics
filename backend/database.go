@@ -104,8 +104,8 @@ var migrations = []Migration{{
 		_, err := db.ExecContext(ctx, `
 			CREATE TABLE accounts (
 			    id              VARCHAR(40)  PRIMARY KEY ,
-			    created_at      TIMESTAMP(3) WITH TIME ZONE,
-			    updated_at      TIMESTAMP(3) WITH TIME ZONE,
+			    created_at      TIMESTAMP(3) WITH TIME ZONE NOT NULL DEFAULT NOW(),
+			    updated_at      TIMESTAMP(3) WITH TIME ZONE NOT NULL DEFAULT NOW(),
 			    email           VARCHAR(512) NOT NULL UNIQUE,
 				hashed_password VARCHAR(256) NOT NULL
 			);
@@ -113,16 +113,16 @@ var migrations = []Migration{{
 			CREATE TABLE websites (
 			    id         VARCHAR(40)  PRIMARY KEY,
 			    account_id VARCHAR(40)  NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
-			    created_at TIMESTAMP(3) WITH TIME ZONE,
-			    updated_at TIMESTAMP(3) WITH TIME ZONE,
+			    created_at TIMESTAMP(3) WITH TIME ZONE NOT NULL DEFAULT NOW(),
+			    updated_at TIMESTAMP(3) WITH TIME ZONE NOT NULL DEFAULT NOW(),
 				domain     VARCHAR(256) NOT NULL UNIQUE
 			);
 
 			CREATE TABLE sessions (
 			    id           VARCHAR(40) PRIMARY KEY,
 			    account_id   VARCHAR(40) NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
-			    refreshed_at TIMESTAMP(3) WITH TIME ZONE,
-			    created_at   TIMESTAMP(3) WITH TIME ZONE
+			    refreshed_at TIMESTAMP(3) WITH TIME ZONE NOT NULL DEFAULT NOW(),
+			    created_at   TIMESTAMP(3) WITH TIME ZONE NOT NULL DEFAULT NOW()
 			);
 
 			-- Analytics tables don't have unique constraints, FKs, or PKs for fast inserts
@@ -131,7 +131,7 @@ var migrations = []Migration{{
 			    id         VARCHAR(64)  NOT NULL,
 			    sid        VARCHAR(64)  NOT NULL,
 				website_id VARCHAR(40)  NOT NULL,
-			    created_at TIMESTAMP(0) WITH TIME ZONE,
+			    created_at TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT NOW(),
 			    name       VARCHAR(64)  NOT NULL
 			);
 			CREATE INDEX analytics_events__website_id_created_at ON analytics_events (website_id, created_at);
@@ -140,7 +140,7 @@ var migrations = []Migration{{
 			    id           VARCHAR(64)  NOT NULL,
 			    sid          VARCHAR(64)  NOT NULL,
 				website_id   VARCHAR(40)  NOT NULL,
-			    created_at   TIMESTAMP(0) WITH TIME ZONE,
+			    created_at   TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT NOW(),
 				host         VARCHAR(512) NOT NULL,
 				path         TEXT         NOT NULL,
 				screen_size  VARCHAR(32)  NOT NULL,

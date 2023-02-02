@@ -7,11 +7,11 @@ export interface Rollup {
   unique: number;
 }
 
-const useRollups = () =>
+const useRollups = (siteId: string) =>
   useQuery<Rollup[]>(
     'rollups',
     async () => {
-      const res = await fetch('/api/rollups/pageviews');
+      const res = await fetch(`/api/rollups/pageviews?site=${siteId}`);
       return (await res.json()).map((r: any) => {
         r.start = new Date(r.start);
         r.end = new Date(r.end);

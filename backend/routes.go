@@ -14,30 +14,33 @@ func SetupRouter() http.Handler {
 	})
 
 	r.Path("/api/rollups/pageviews").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siteId := r.URL.Query().Get("site")
 		rollups := FindAnalyticsPageviewsBuckets(
 			GetDB(),
 			r.Context(),
 			start(),
 			end(),
 			PeriodHour,
-			ensureDummyWebsite(),
+			siteId,
 		)
 		RespondJSON(w, &rollups)
 	})
 
 	r.Path("/api/popular").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siteId := r.URL.Query().Get("site")
 		counts := FindAnalyticsPageviewsPopular(
 			GetDB(),
 			r.Context(),
 			start(),
 			end(),
-			ensureDummyWebsite(),
+			siteId,
 		)
 		RespondJSON(w, &counts)
 	})
 
 	r.Path("/api/live").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		count := CountAnalyticsPageviewsRecent(GetDB(), r.Context(), ensureDummyWebsite())
+		siteId := r.URL.Query().Get("site")
+		count := CountAnalyticsPageviewsRecent(GetDB(), r.Context(), siteId)
 		RespondJSON(w, &count)
 	})
 
@@ -70,6 +73,9 @@ func SetupRouter() http.Handler {
 
 	r.PathPrefix("/assets").Handler(http.FileServer(http.Dir("./dist")))
 	r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/site/"+ensureDummyWebsite(), http.StatusFound)
+	})
+	r.PathPrefix("/site").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./dist/index.html")
 	})
 
