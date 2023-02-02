@@ -44,7 +44,7 @@ func SetupRouter() http.Handler {
 		RespondJSON(w, &count)
 	})
 
-	r.Path("/api/event").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	r.Path("/t/e").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()
 
 		site := q.Get("id")
@@ -54,7 +54,7 @@ func SetupRouter() http.Handler {
 		CreateAnalyticsEvent(GetDB(), r.Context(), id, sid, site, eventName)
 	})
 
-	r.Path("/api/page").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	r.Path("/t/p").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()
 
 		site := q.Get("id")

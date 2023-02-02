@@ -1,10 +1,10 @@
 (function () {
   // function event(name) {
-  //   send('/event', [{ name: 'e', value: name }]);
+  //   send('/e', [{ name: 'e', value: name }]);
   // }
 
   function page() {
-    send('/page', [
+    send('/p', [
       {
         name: 'h',
         value: `${window.location.protocol}//${window.location.host}`,
@@ -23,7 +23,7 @@
     const qs = params
       .map((v) => `${v.name}=${encodeURIComponent(v.value)}`)
       .join('&');
-    const url = `${scriptOrigin()}/api${path}?${qs}`;
+    const url = `${scriptOrigin()}/t${path}?${qs}`;
     fetch(url, { mode: 'no-cors' }).catch((err) => console.log('Error:', err));
   }
 
