@@ -8,7 +8,10 @@ const Title: React.FC<HTMLAttributes<HTMLHeadingElement>> = ({
   return (
     <h1
       {...props}
-      className={classnames('text-4xl font-bold text-gray-800', className)}
+      className={classnames(
+        'text-3xl leading-none font-semibold text-gray-800',
+        className,
+      )}
     />
   );
 };

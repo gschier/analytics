@@ -6,21 +6,17 @@ import Design from './pages/Design';
 import Home from './pages/Home';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Helmet } from 'react-helmet';
-import useStateLocalStorage from './hooks/use-state-localstorage';
-import { useTheme } from './hooks/use-theme';
+import { HStack, VStack } from './components/Stacks';
 
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
-  const [theme] = useTheme();
   return (
     <QueryClientProvider client={queryClient}>
       <Helmet>
         <body className="max-w-5xl mx-auto" />
-        <html className={theme} />
       </Helmet>
       <Router>
-        <Navbar />
         <Switch>
           <Route exact path="/">
             <Home />

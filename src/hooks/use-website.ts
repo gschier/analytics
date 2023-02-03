@@ -1,4 +1,3 @@
-import { useQuery } from 'react-query';
 import useWebsites, { Website } from './use-websites';
 
 const useWebsite = (websiteId: string) => {

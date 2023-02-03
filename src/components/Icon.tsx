@@ -2,7 +2,7 @@ import React from 'react';
 import * as icons from '@heroicons/react/outline';
 import classnames from 'classnames';
 
-export type IconChoice = 'clock' | 'copy';
+export type IconChoice = 'clock' | 'copy' | 'home' | 'sun' | 'moon';
 export type IconSize = 'sm' | 'md' | 'lg';
 
 const sizeClassMap: Record<IconSize, string> = {
@@ -27,6 +27,12 @@ const Icon: React.FC<IconProps> = ({ className, icon, size, ...props }) => {
       return <icons.ClockIcon {...allProps} />;
     case 'copy':
       return <icons.ClipboardCopyIcon {...allProps} />;
+    case 'home':
+      return <icons.HomeIcon {...allProps} />;
+    case 'sun':
+      return <icons.SunIcon {...allProps} />;
+    case 'moon':
+      return <icons.MoonIcon {...allProps} />;
     default:
       throw new Error(`Unknown icon ${icon}`);
   }

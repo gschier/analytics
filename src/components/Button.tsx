@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import Icon, { IconChoice } from './Icon';
 
 export type ButtonColor = 'primary' | 'secondary' | 'danger' | 'gray';
-export type ButtonVariant = 'solid' | 'outline';
+export type ButtonVariant = 'solid' | 'outline' | 'ghost';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 const colorClassMap: Record<ButtonVariant, Record<ButtonColor, string>> = {
@@ -42,6 +42,28 @@ const colorClassMap: Record<ButtonVariant, Record<ButtonColor, string>> = {
     ),
     danger: classnames(
       'text-danger-500 ring-1 ring-danger-500',
+      'hover:bg-danger-50 hover:text-danger-600 hover:ring-danger-600',
+      'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-offset-0 focus-visible:ring-danger-400 focus-visible:ring-opacity-50',
+    ),
+    gray: classnames(
+      'text-gray-500 ring-1 ring-gray-500',
+      'hover:bg-gray-50 hover:text-gray-600 hover:ring-gray-600',
+      'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-offset-0 focus-visible:ring-gray-400 focus-visible:ring-opacity-50',
+    ),
+  },
+  ghost: {
+    primary: classnames(
+      'text-primary-500',
+      'hover:bg-primary-50 hover:text-primary-600 hover:ring-primary-600',
+      'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-offset-0 focus-visible:ring-primary-400 focus-visible:ring-opacity-50',
+    ),
+    secondary: classnames(
+      'text-secondary-500',
+      'hover:bg-secondary-50 hover:text-secondary-600 hover:ring-secondary-600',
+      'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-offset-0 focus-visible:ring-secondary-400 focus-visible:ring-opacity-50',
+    ),
+    danger: classnames(
+      'text-danger-500',
       'hover:bg-danger-50 hover:text-danger-600 hover:ring-danger-600',
       'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-offset-0 focus-visible:ring-danger-400 focus-visible:ring-opacity-50',
     ),
