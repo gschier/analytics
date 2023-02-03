@@ -70,8 +70,8 @@
   --color-primary-900: var(--color-primary-hue), var(--color-primary-sat), calc(var(--color-primary-lgt) + (100% - var(--color-primary-lgt)) * 0.8);
   --color-primary-800: var(--color-primary-hue), var(--color-primary-sat), calc(var(--color-primary-lgt) + (100% - var(--color-primary-lgt)) * 0.6);
   --color-primary-700: var(--color-primary-hue), var(--color-primary-sat), calc(var(--color-primary-lgt) + (100% - var(--color-primary-lgt)) * 0.4);
-  --color-primary-600: var(--color-primary-hue), var(--color-primary-sat), calc(var(--color-primary-lgt) + (100% - var(--color-primary-lgt)) * 0.2);
-  --color-primary-500: var(--color-primary-hue), var(--color-primary-sat), calc(var(--color-primary-lgt) + (100% - var(--color-primary-lgt)) * 0.0);
+  --color-primary-600: var(--color-primary-hue), var(--color-primary-sat), calc(var(--color-primary-lgt) + (100% - var(--color-primary-lgt)) * 0.25);
+  --color-primary-500: var(--color-primary-hue), var(--color-primary-sat), calc(var(--color-primary-lgt) + (100% - var(--color-primary-lgt)) * 0.1);
   --color-primary-400: var(--color-primary-hue), var(--color-primary-sat), calc(var(--color-primary-lgt) - var(--color-primary-lgt) * 0.2);
   --color-primary-300: var(--color-primary-hue), var(--color-primary-sat), calc(var(--color-primary-lgt) - var(--color-primary-lgt) * 0.4);
   --color-primary-200: var(--color-primary-hue), var(--color-primary-sat), calc(var(--color-primary-lgt) - var(--color-primary-lgt) * 0.55);

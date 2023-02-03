@@ -3,7 +3,12 @@
 @import "./colors.css";
 
 
-html {
+:root:not(.dark) {
   background-color: hsl(var(--color-gray-0));
   color: hsl(var(--color-gray-800));
+}
+
+:root {
+  background-color: hsl(var(--color-primary-50));
+  color: hsl(var(--color-primary-800));
 }

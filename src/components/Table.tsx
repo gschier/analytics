@@ -29,7 +29,7 @@ export const Table: React.FC<TableProps & HTMLAttributes<HTMLElement>> = ({
                 <th
                   key={i}
                   className={classnames(
-                    'font-medium text-left bg-gray-50',
+                    'font-medium text-left bg-gray-50 dark:bg-primary-100',
                     cellClass,
                   )}>
                   <Paragraph size="sm">{c}</Paragraph>

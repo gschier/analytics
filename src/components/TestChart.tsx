@@ -18,11 +18,11 @@ type TooltipData = {
   secondY: number;
 };
 
-export const background = 'hsl(var(--color-primary-50))';
-export const background2 = 'hsl(var(--color-primary-50))';
-export const accentColor = 'hsl(var(--color-primary-400))';
+export const background = 'hsla(var(--color-primary-100), 0.6)';
+export const background2 = 'hsla(var(--color-primary-100), 0.6)';
+export const accentColor = 'hsl(var(--color-primary-300))';
 export const accentColor2 = 'hsl(var(--color-primary-300))';
-export const accentColorTwo = 'hsl(var(--color-primary-500))';
+export const accentColorTwo = 'hsl(var(--color-primary-400))';
 export const accentColorTwo2 = 'hsl(var(--color-primary-400))';
 export const accentColorDark = 'hsl(var(--color-primary-600))';
 const tooltipStyles = {
@@ -139,7 +139,10 @@ export default withTooltip<AreaProps, TooltipData>(
 
     return (
       <div style={{ touchAction: 'pan-y' }}>
-        <svg width={width} height={height} className="rounded">
+        <svg
+          width={width}
+          height={height}
+          className="rounded border border-gray-100">
           <rect
             x={0}
             y={0}
