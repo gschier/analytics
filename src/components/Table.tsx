@@ -7,7 +7,7 @@ export interface TableProps {
   columns?: string[];
 }
 
-const cellClass = classnames('px-3', 'py-2');
+const cellClass = classnames('px-3', 'py-1.5');
 
 export const Table: React.FC<TableProps & HTMLAttributes<HTMLElement>> = ({
   className,
