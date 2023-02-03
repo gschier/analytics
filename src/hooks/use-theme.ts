@@ -1,6 +1,5 @@
 import useStateLocalStorage from './use-state-localstorage';
 import { useEffect, useState } from 'react';
-import { act } from 'react-dom/test-utils';
 
 export const useTheme = (): [
   'dark' | 'light',
