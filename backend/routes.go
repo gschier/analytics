@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/gorilla/mux"
 	"net/http"
 	"time"
@@ -11,6 +12,16 @@ func SetupRouter() http.Handler {
 
 	r.Path("/script.js").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./dist/tracker.js")
+	})
+
+	r.Path("/api/websites").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		account, _ := GetAccountByEmail(GetDB(), context.Background(), "greg@schier.co")
+		websites := FindWebsitesByAccountID(
+			GetDB(),
+			r.Context(),
+			account.ID,
+		)
+		RespondJSON(w, &websites)
 	})
 
 	r.Path("/api/rollups/pageviews").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -72,10 +83,8 @@ func SetupRouter() http.Handler {
 	})
 
 	r.PathPrefix("/assets").Handler(http.FileServer(http.Dir("./dist")))
-	r.Path("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/site/"+ensureDummyWebsite(), http.StatusFound)
-	})
-	r.PathPrefix("/site").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+	r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./dist/index.html")
 	})
 
