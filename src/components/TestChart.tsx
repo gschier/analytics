@@ -61,6 +61,7 @@ export default withTooltip<AreaProps, TooltipData>(
     data: stock = appleStock.slice(800),
     data2: stock2 = appleStock.slice(800),
   }: AreaProps & WithTooltipProvidedProps<TooltipData>) => {
+    console.log('TEST CHART');
     if (width < 10) return null;
     if (stock.length === 0) return null;
 
@@ -77,7 +78,7 @@ export default withTooltip<AreaProps, TooltipData>(
           range: [margin.left, innerWidth + margin.left],
           domain: extent(stock, getDate) as [Date, Date],
         }),
-      [innerWidth, margin.left],
+      [innerWidth, margin.left, stock, stock2],
     );
     const stockValueScale = useMemo(
       () =>
@@ -86,7 +87,7 @@ export default withTooltip<AreaProps, TooltipData>(
           domain: [0, (max(stock2, getStockValue) || 0) + innerHeight / 10],
           nice: true,
         }),
-      [margin.top, innerHeight],
+      [margin.top, innerHeight, stock, stock2],
     );
 
     // tooltip handler

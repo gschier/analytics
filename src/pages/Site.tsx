@@ -11,7 +11,6 @@ import { capitalize } from '../util/text';
 import Link from '../components/Link';
 import useCurrentUsers from '../hooks/use-current-users';
 import useSummaryStats from '../hooks/use-summary-stats';
-import useStateLocalStorage from '../hooks/use-state-localstorage';
 import Button from '../components/Button';
 import { Helmet } from 'react-helmet';
 import usePopular from '../hooks/use-popular';
@@ -60,7 +59,6 @@ const Site: React.FC = () => {
           <ParentSize>
             {({ width, height }) => (
               <TestChart
-                key={websiteId}
                 width={width}
                 height={height}
                 data={rollups.map((r) => ({
