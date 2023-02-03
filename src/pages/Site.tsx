@@ -60,6 +60,7 @@ const Site: React.FC = () => {
           <ParentSize>
             {({ width, height }) => (
               <TestChart
+                key={websiteId}
                 width={width}
                 height={height}
                 data={rollups.map((r) => ({
