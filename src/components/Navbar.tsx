@@ -39,10 +39,10 @@ const Navbar: React.FC<NavbarProps & HTMLAttributes<HTMLElement>> = ({
         </Title>
         <Button
           variant="ghost"
-          className="ml-auto"
-          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
-          <Icon icon={theme === 'dark' ? 'moon' : 'sun'} />
-        </Button>
+          className="ml-auto -mr-2 px-2"
+          icon={theme === 'dark' ? 'moon' : 'sun'}
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        />
       </HStack>
     </nav>
   );

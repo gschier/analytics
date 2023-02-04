@@ -5,10 +5,10 @@
 
 :root:not(.dark) {
   background-color: hsl(var(--color-gray-0));
-  color: hsl(var(--color-gray-800));
+  color: hsl(var(--color-gray-900));
 }
 
 :root {
-  background-color: hsl(var(--color-primary-50));
-  color: hsl(var(--color-primary-800));
+  background-color: hsla(var(--color-gray-25));
+  color: hsl(var(--color-gray-900));
 }

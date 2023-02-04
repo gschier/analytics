@@ -1,10 +1,8 @@
-:root {
+:root:not(.dark) {
   --color-gray-hue: var(--color-primary-hue);
   --color-gray-sat: calc(var(--color-primary-sat) * 0.3);
   --color-gray-lgt: calc(var(--color-primary-lgt) * 1);
-}
 
-:root:not(.dark) {
   --color-primary-0: var(--color-primary-hue), var(--color-primary-sat), calc(var(--color-primary-lgt) + (100% - var(--color-primary-lgt)) * 0.98);
   --color-primary-50: var(--color-primary-hue), var(--color-primary-sat), calc(var(--color-primary-lgt) + (100% - var(--color-primary-lgt)) * 0.9);
   --color-primary-100: var(--color-primary-hue), var(--color-primary-sat), calc(var(--color-primary-lgt) + (100% - var(--color-primary-lgt)) * 0.8);
@@ -54,7 +52,8 @@
   --color-danger-900: var(--color-danger-hue), var(--color-danger-sat), calc(var(--color-danger-lgt) - var(--color-danger-lgt) * 0.8);
 
   --color-gray-0: var(--color-gray-hue), var(--color-gray-sat), calc(var(--color-gray-lgt) + (100% - var(--color-gray-lgt)) * 0.98);
-  --color-gray-50: var(--color-gray-hue), var(--color-gray-sat), calc(var(--color-gray-lgt) + (100% - var(--color-gray-lgt)) * 0.9);
+  --color-gray-25: var(--color-gray-hue), var(--color-gray-sat), calc(var(--color-gray-lgt) + (100% - var(--color-gray-lgt)) * 0.92);
+  --color-gray-50: var(--color-gray-hue), var(--color-gray-sat), calc(var(--color-gray-lgt) + (100% - var(--color-gray-lgt)) * 0.86);
   --color-gray-100: var(--color-gray-hue), var(--color-gray-sat), calc(var(--color-gray-lgt) + (100% - var(--color-gray-lgt)) * 0.8);
   --color-gray-200: var(--color-gray-hue), var(--color-gray-sat), calc(var(--color-gray-lgt) + (100% - var(--color-gray-lgt)) * 0.6);
   --color-gray-300: var(--color-gray-hue), var(--color-gray-sat), calc(var(--color-gray-lgt) + (100% - var(--color-gray-lgt)) * 0.4);
@@ -67,6 +66,10 @@
 }
 
 .dark {
+  --color-gray-hue: var(--color-primary-hue);
+  --color-gray-sat: calc(var(--color-primary-sat) * 0.8);
+  --color-gray-lgt: calc(var(--color-primary-lgt) * 1);
+
   --color-primary-900: var(--color-primary-hue), var(--color-primary-sat), calc(var(--color-primary-lgt) + (100% - var(--color-primary-lgt)) * 0.8);
   --color-primary-800: var(--color-primary-hue), var(--color-primary-sat), calc(var(--color-primary-lgt) + (100% - var(--color-primary-lgt)) * 0.6);
   --color-primary-700: var(--color-primary-hue), var(--color-primary-sat), calc(var(--color-primary-lgt) + (100% - var(--color-primary-lgt)) * 0.4);
@@ -124,6 +127,7 @@
   --color-gray-300: var(--color-gray-hue), var(--color-gray-sat), calc(var(--color-gray-lgt) - var(--color-gray-lgt) * 0.2);
   --color-gray-200: var(--color-gray-hue), var(--color-gray-sat), calc(var(--color-gray-lgt) - var(--color-gray-lgt) * 0.3);
   --color-gray-100: var(--color-gray-hue), var(--color-gray-sat), calc(var(--color-gray-lgt) - var(--color-gray-lgt) * 0.5);
-  --color-gray-50: var(--color-gray-hue), var(--color-gray-sat), calc(var(--color-gray-lgt) - var(--color-gray-lgt) * 0.8);
+  --color-gray-50: var(--color-gray-hue), var(--color-gray-sat), calc(var(--color-gray-lgt) - var(--color-gray-lgt) * 0.75);
+  --color-gray-25: var(--color-gray-hue), var(--color-gray-sat), calc(var(--color-gray-lgt) - var(--color-gray-lgt) * 0.84);
   --color-gray-0: var(--color-gray-hue), var(--color-gray-sat), calc(var(--color-gray-lgt) - var(--color-gray-lgt) * 0.9);
 }

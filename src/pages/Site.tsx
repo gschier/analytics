@@ -26,7 +26,7 @@ const Site: React.FC = () => {
   return (
     <>
       <Navbar website={website} />
-      <VStack space={6} className="mx-4">
+      <VStack space={6} className="mx-4 my-6">
         <HStack space={3}>
           <Card title="Live" className="w-full">
             <HugeText>{currentUsers.data}</HugeText>
