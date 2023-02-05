@@ -24,11 +24,11 @@ const Card: React.FC<CardProps & HTMLAttributes<HTMLDivElement>> = ({
         <Paragraph
           size="sm"
           className="px-3 py-2 bg-gray-50 text-gray-600 uppercase">
-          {title}
+          {title || ' '}
         </Paragraph>
       )}
       <VStack space={3} className="p-3 rounded-b-lg">
-        {children}
+        {children || ' '}
       </VStack>
     </VStack>
   );
