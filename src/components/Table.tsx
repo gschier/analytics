@@ -29,10 +29,12 @@ export const Table: React.FC<TableProps & HTMLAttributes<HTMLElement>> = ({
                 <th
                   key={i}
                   className={classnames(
-                    'font-medium text-left bg-gray-50',
+                    'text-left bg-gray-50 py-2',
                     cellClass,
                   )}>
-                  <Paragraph size="sm">{c}</Paragraph>
+                  <Paragraph size="sm" className="text-gray-600">
+                    {c}
+                  </Paragraph>
                 </th>
               ))}
             </tr>

@@ -121,7 +121,7 @@ func CreateAnalyticsEvent(db sqlx.ExtContext, ctx context.Context, id, sid, webs
 func CountAnalyticsPageviewsRecent(db sqlx.QueryerContext, ctx context.Context, websiteID string) int64 {
 	var count int64
 	err := sqlx.GetContext(ctx, db, &count, `
-		SELECT COUNT(*) FROM analytics_pageviews 
+		SELECT COUNT(DISTINCT sid) FROM analytics_pageviews 
 		WHERE website_id = $1 AND created_at > (NOW() - INTERVAL '5 minutes')
 		LIMIT 20
 	`, websiteID)

@@ -21,7 +21,7 @@ export const Paragraph: React.FC<
     <p
       {...props}
       className={classnames(
-        'font-normal text-gray-600',
+        'font-normal text-gray-800',
         sizeClassMap[size ?? 'md'],
         className,
       )}
