@@ -20,10 +20,10 @@ type TooltipData = {
 
 export const background = 'hsla(var(--color-primary-100), 0.6)';
 export const background2 = 'hsla(var(--color-primary-100), 0.6)';
-export const accentColor = 'hsl(var(--color-primary-200))';
-export const accentColor2 = 'hsl(var(--color-primary-200))';
-export const accentColorTwo = 'hsl(var(--color-primary-300))';
-export const accentColorTwo2 = 'hsl(var(--color-primary-300))';
+export const accentColor = 'hsl(var(--color-primary-300))';
+export const accentColor2 = 'hsl(var(--color-primary-300))';
+export const accentColorTwo = 'hsl(var(--color-primary-400))';
+export const accentColorTwo2 = 'hsl(var(--color-primary-400))';
 export const accentColorDark = 'hsl(var(--color-primary-600))';
 const tooltipStyles = {
   ...defaultStyles,
