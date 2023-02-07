@@ -1,15 +1,18 @@
 (function () {
-  // function event(name) {
-  //   send('/e', [{ name: 'e', value: name }]);
-  // }
+  function event(name) {
+    send('/e', [{ name: 'e', value: name }]);
+  }
 
   function page() {
+    const { pathname, protocol, host } = window.location;
+    if (pathname === sessionStorage.lastPathName) return;
+    sessionStorage.lastPathName = pathname;
     send('/p', [
       {
         name: 'h',
-        value: `${window.location.protocol}//${window.location.host}`,
+        value: `${protocol}//${host}`,
       },
-      { name: 'p', value: window.location.pathname },
+      { name: 'p', value: pathname },
     ]);
   }
 
