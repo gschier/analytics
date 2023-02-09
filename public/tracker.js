@@ -17,6 +17,10 @@
   }
 
   function send(path, params) {
+    if (localStorage.disableAnalytics === 'true') {
+      console.log('Analytics disabled', path, params);
+    }
+
     params.push({ name: 'id', value: website() });
     params.push({
       name: 'tz',
