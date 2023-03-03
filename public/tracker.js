@@ -5,7 +5,11 @@
 
   function page() {
     const { pathname, protocol, host } = window.location;
-    if (pathname === sessionStorage.lastPathName) return;
+    if (
+      pathname === sessionStorage.lastPathName ||
+      window.location.hostname === 'localhost'
+    )
+      return;
     sessionStorage.lastPathName = pathname;
     send('/p', [
       {
