@@ -5,8 +5,14 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"log/slog"
+	"os"
 	"time"
 )
+
+var logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+	Level: slog.LevelDebug,
+}))
 
 var _db *sqlx.DB
 
@@ -19,6 +25,7 @@ func GetDB() *sqlx.DB {
 	for i := 0; i < 5; i++ {
 		_db, err = sqlx.Connect("postgres", Config.DatabaseURL)
 		if err != nil {
+			logger.Warn("Failed to connect to database", "error", err)
 			time.Sleep(1 * time.Second)
 		} else {
 			return _db
