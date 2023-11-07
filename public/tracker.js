@@ -1,6 +1,12 @@
 (function () {
-  function event(name) {
-    send('/e', [{ name: 'e', value: name }]);
+  function event(name, attributes) {
+    send('/e', [
+      { name: 'e', value: name },
+      {
+        name: 'a',
+        value: JSON.stringify({ ...attributes, version: appVersion }),
+      },
+    ]);
   }
 
   function page() {
