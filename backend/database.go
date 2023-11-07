@@ -21,11 +21,11 @@ func GetDB() *sqlx.DB {
 		if err != nil {
 			time.Sleep(1 * time.Second)
 		} else {
-			break
+			return _db
 		}
 	}
 
-	return _db
+	panic("Failed to connect to database")
 }
 
 type Migration struct {
