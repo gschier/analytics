@@ -11,9 +11,20 @@ import (
 var _db *sqlx.DB
 
 func GetDB() *sqlx.DB {
-	if _db == nil {
-		_db = sqlx.MustConnect("postgres", Config.DatabaseURL)
+	if _db != nil {
+		return _db
 	}
+
+	var err error
+	for i := 0; i < 5; i++ {
+		_db, err = sqlx.Connect("postgres", Config.DatabaseURL)
+		if err != nil {
+			time.Sleep(1 * time.Second)
+		} else {
+			break
+		}
+	}
+
 	return _db
 }
 
