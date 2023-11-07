@@ -4,7 +4,7 @@
       { name: 'e', value: name },
       {
         name: 'a',
-        value: JSON.stringify({ ...attributes, version: appVersion }),
+        value: JSON.stringify(attributes || {}),
       },
     ]);
   }
