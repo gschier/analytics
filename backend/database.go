@@ -36,7 +36,6 @@ func GetDB() *sqlx.DB {
 }
 
 type Migration struct {
-	Number  int
 	Name    string
 	Forward func(ctx context.Context, db *sqlx.DB) error
 }
@@ -166,6 +165,15 @@ var migrations = []Migration{{
 				user_agent   TEXT         NOT NULL
 			);
 			CREATE INDEX analytics_pageviews__website_id_created_at ON analytics_pageviews (website_id, created_at);
+		`)
+
+		return err
+	},
+}, {
+	Name: "add_event_attributes",
+	Forward: func(ctx context.Context, db *sqlx.DB) error {
+		_, err := db.ExecContext(ctx, `
+			ALTER TABLE analytics_events ADD COLUMN attributes JSONB NOT NULL DEFAULT '{}';
 		`)
 
 		return err

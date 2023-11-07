@@ -61,9 +61,10 @@ func SetupRouter() http.Handler {
 
 		site := q.Get("id")
 		eventName := q.Get("e")
+		attributes := q.Get("a")
 		id, sid := GenerateIDAndSID(r, site)
 
-		CreateAnalyticsEvent(GetDB(), r.Context(), id, sid, site, eventName)
+		CreateAnalyticsEvent(GetDB(), r.Context(), id, sid, site, eventName, attributes)
 	})
 
 	r.Path("/t/p").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -78,7 +79,6 @@ func SetupRouter() http.Handler {
 		userAgent := r.UserAgent()
 		id, sid := GenerateIDAndSID(r, site)
 		countryCode := TimezoneToCountryCode(timezone)
-
 		CreateAnalyticsPageview(GetDB(), r.Context(), id, sid, site, host, path, screensize, countryCode, userAgent)
 		RespondText(w, "OK")
 	})

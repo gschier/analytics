@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"golang.org/x/crypto/bcrypt"
@@ -26,11 +27,12 @@ type Website struct {
 }
 
 type AnalyticsEvent struct {
-	ID        string    `db:"id"          json:"id"`
-	WebsiteID string    `db:"website_id"  json:"websiteId"`
-	CreatedAt time.Time `db:"created_at"  json:"createdAt"`
-	SID       string    `db:"sid"         json:"sid"`
-	Name      string    `db:"name"        json:"name"`
+	ID         string    `db:"id"          json:"id"`
+	WebsiteID  string    `db:"website_id"  json:"websiteId"`
+	CreatedAt  time.Time `db:"created_at"  json:"createdAt"`
+	SID        string    `db:"sid"         json:"sid"`
+	Name       string    `db:"name"        json:"name"`
+	Attributes string    `db:"attributes"  json:"attributes"`
 }
 
 type AnalyticsPageview struct {
@@ -50,7 +52,7 @@ func GetAccountByEmail(db sqlx.QueryerContext, ctx context.Context, email string
 	err := sqlx.GetContext(ctx, db, &account, `
 		SELECT * FROM accounts WHERE email = $1
 	`, email)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return nil, false
 	} else if err != nil {
 		panic(err)
@@ -84,18 +86,19 @@ func CreateAccount(db sqlx.ExtContext, ctx context.Context, email, password stri
 	return &account
 }
 
-func CreateAnalyticsEvent(db sqlx.ExtContext, ctx context.Context, id, sid, websiteID, name string) *AnalyticsEvent {
+func CreateAnalyticsEvent(db sqlx.ExtContext, ctx context.Context, id, sid, websiteID, name, attributes string) *AnalyticsEvent {
 	event := AnalyticsEvent{
-		ID:        id,
-		SID:       sid,
-		WebsiteID: websiteID,
-		CreatedAt: time.Now(),
-		Name:      name,
+		ID:         id,
+		SID:        sid,
+		WebsiteID:  websiteID,
+		CreatedAt:  time.Now(),
+		Name:       name,
+		Attributes: attributes,
 	}
 
 	_, err := sqlx.NamedExecContext(ctx, db, `
-		INSERT INTO analytics_events (id, sid, website_id, created_at, name) 
-		VALUES (:id, :sid, :website_id, :created_at, :name)
+		INSERT INTO analytics_events (id, sid, website_id, created_at, name, attributes) 
+		VALUES (:id, :sid, :website_id, :created_at, :name, :attributes)
 	`, &event)
 	if err != nil {
 		panic(err)

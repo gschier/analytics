@@ -52,7 +52,12 @@ export const TableRow: React.FC<
   return (
     <tr {...props}>
       {React.Children.map(children, (contents, i) => (
-        <td key={i} className={classnames(cellClass, 'text-gray-700')}>
+        <td
+          key={i}
+          className={classnames(
+            cellClass,
+            'text-gray-700 truncate w-full max-w-0',
+          )}>
           {contents}
         </td>
       ))}
