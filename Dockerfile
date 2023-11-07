@@ -1,11 +1,11 @@
 # Frontend Build
-FROM node:16-alpine AS frontend
+FROM node:20-alpine AS frontend
 WORKDIR /app/
 ADD . .
 RUN npm install && npm run build
 
 # Backend Build
-FROM golang:1.16-alpine AS backend
+FROM golang:1.21-alpine AS backend
 WORKDIR /app
 ADD . .
 RUN go install ./...
