@@ -27,12 +27,16 @@ type Website struct {
 }
 
 type AnalyticsEvent struct {
-	ID         string    `db:"id"          json:"id"`
-	WebsiteID  string    `db:"website_id"  json:"websiteId"`
-	CreatedAt  time.Time `db:"created_at"  json:"createdAt"`
-	SID        string    `db:"sid"         json:"sid"`
-	Name       string    `db:"name"        json:"name"`
-	Attributes string    `db:"attributes"  json:"attributes"`
+	ID          string    `db:"id"           json:"id"`
+	WebsiteID   string    `db:"website_id"   json:"websiteId"`
+	CreatedAt   time.Time `db:"created_at"   json:"createdAt"`
+	SID         string    `db:"sid"          json:"sid"`
+	Name        string    `db:"name"         json:"name"`
+	Attributes  string    `db:"attributes"   json:"attributes"`
+	ScreenSize  string    `db:"screen_size"  json:"screenSize"`
+	CountryCode string    `db:"country_code" json:"countryCode"`
+	Platform    string    `db:"platform"     json:"platform"`
+	Version     string    `db:"version"      json:"version"`
 }
 
 type AnalyticsPageview struct {
@@ -86,15 +90,8 @@ func CreateAccount(db sqlx.ExtContext, ctx context.Context, email, password stri
 	return &account
 }
 
-func CreateAnalyticsEvent(db sqlx.ExtContext, ctx context.Context, id, sid, websiteID, name, attributes string) *AnalyticsEvent {
-	event := AnalyticsEvent{
-		ID:         id,
-		SID:        sid,
-		WebsiteID:  websiteID,
-		CreatedAt:  time.Now(),
-		Name:       name,
-		Attributes: attributes,
-	}
+func CreateAnalyticsEvent(db sqlx.ExtContext, ctx context.Context, event *AnalyticsEvent) *AnalyticsEvent {
+	event.CreatedAt = time.Now()
 
 	_, err := sqlx.NamedExecContext(ctx, db, `
 		INSERT INTO analytics_events (id, sid, website_id, created_at, name, attributes) 
@@ -104,7 +101,7 @@ func CreateAnalyticsEvent(db sqlx.ExtContext, ctx context.Context, id, sid, webs
 		panic(err)
 	}
 
-	return &event
+	return event
 }
 
 //func FindAnalyticsPageviews(db sqlx.QueryerContext, ctx context.Context, websiteID string) []AnalyticsPageview {
@@ -221,26 +218,16 @@ func FindAnalyticsPageviewsPopular(db sqlx.QueryerContext, ctx context.Context, 
 	return counts
 }
 
-func CreateAnalyticsPageview(db sqlx.ExtContext, ctx context.Context, id, sid, websiteID, host, path, screensize, country, userAgent string) *AnalyticsPageview {
-	pageview := AnalyticsPageview{
-		ID:          id,
-		CreatedAt:   time.Now(),
-		WebsiteID:   websiteID,
-		SID:         sid,
-		Host:        host,
-		Path:        path,
-		ScreenSize:  screensize,
-		CountryCode: country,
-		UserAgent:   userAgent,
-	}
+func CreateAnalyticsPageview(db sqlx.ExtContext, ctx context.Context, pageview *AnalyticsPageview) *AnalyticsPageview {
+	pageview.CreatedAt = time.Now()
 	_, err := sqlx.NamedExecContext(ctx, db, `
 		INSERT INTO analytics_pageviews (id, website_id, sid, created_at, host, path, screen_size, country_code, user_agent) 
 		VALUES (:id, :website_id, :sid, :created_at, :host, :path, :screen_size, :country_code, :user_agent)
-	`, &pageview)
+	`, pageview)
 	if err != nil {
 		panic(err)
 	}
-	return &pageview
+	return pageview
 }
 
 func CreateWebsite(db sqlx.ExtContext, ctx context.Context, accountID, domain string) *Website {

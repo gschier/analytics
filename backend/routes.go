@@ -62,9 +62,25 @@ func SetupRouter() http.Handler {
 		site := q.Get("id")
 		eventName := q.Get("e")
 		attributes := q.Get("a")
+		screensize := q.Get("xy")
+		timezone := q.Get("tz")
+		platform := q.Get("os")
+		version := q.Get("v")
 		id, sid := GenerateIDAndSID(r, site)
 
-		CreateAnalyticsEvent(GetDB(), r.Context(), id, sid, site, eventName, attributes)
+		event := AnalyticsEvent{
+			ID:          id,
+			SID:         sid,
+			WebsiteID:   site,
+			Name:        eventName,
+			Attributes:  attributes,
+			CountryCode: TimezoneToCountryCode(timezone),
+			ScreenSize:  screensize,
+			Platform:    platform,
+			Version:     version,
+		}
+		CreateAnalyticsEvent(GetDB(), r.Context(), &event)
+		RespondText(w, "OK")
 	})
 
 	r.Path("/t/p").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -76,10 +92,18 @@ func SetupRouter() http.Handler {
 		screensize := q.Get("xy")
 		timezone := q.Get("tz")
 
-		userAgent := r.UserAgent()
 		id, sid := GenerateIDAndSID(r, site)
-		countryCode := TimezoneToCountryCode(timezone)
-		CreateAnalyticsPageview(GetDB(), r.Context(), id, sid, site, host, path, screensize, countryCode, userAgent)
+		pageview := AnalyticsPageview{
+			ID:          id,
+			SID:         sid,
+			WebsiteID:   site,
+			Host:        host,
+			Path:        path,
+			ScreenSize:  screensize,
+			CountryCode: TimezoneToCountryCode(timezone),
+			UserAgent:   r.UserAgent(),
+		}
+		CreateAnalyticsPageview(GetDB(), r.Context(), &pageview)
 		RespondText(w, "OK")
 	})
 

@@ -178,4 +178,17 @@ var migrations = []Migration{{
 
 		return err
 	},
+}, {
+	Name: "add_more_event_properties",
+	Forward: func(ctx context.Context, db *sqlx.DB) error {
+		_, err := db.ExecContext(ctx, `
+			ALTER TABLE analytics_events 
+				ADD COLUMN screen_size    VARCHAR(32)    NOT NULL DEFAULT '',
+				ADD COLUMN country_code   VARCHAR(2)     NOT NULL DEFAULT '',
+				ADD COLUMN version        VARCHAR(32)    NOT NULL DEFAULT '',
+				ADD COLUMN platform       VARCHAR(16)    NOT NULL DEFAULT ''
+		`)
+
+		return err
+	},
 }}
