@@ -94,8 +94,8 @@ func CreateAnalyticsEvent(db sqlx.ExtContext, ctx context.Context, event *Analyt
 	event.CreatedAt = time.Now()
 
 	_, err := sqlx.NamedExecContext(ctx, db, `
-		INSERT INTO analytics_events (id, sid, website_id, created_at, name, attributes) 
-		VALUES (:id, :sid, :website_id, :created_at, :name, :attributes)
+		INSERT INTO analytics_events (id, sid, website_id, created_at, name, attributes, screen_size, country_code, platform, version) 
+		VALUES (:id, :sid, :website_id, :created_at, :name, :attributes, :screen_size, :country_code, :platform, :version)
 	`, &event)
 	if err != nil {
 		panic(err)
