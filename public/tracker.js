@@ -11,11 +11,7 @@
 
   function page() {
     const { pathname, protocol, host } = window.location;
-    if (
-      pathname === sessionStorage.lastPathName ||
-      window.location.hostname === 'localhost'
-    )
-      return;
+    if (pathname === sessionStorage.lastPathName) return;
     sessionStorage.lastPathName = pathname;
     send('/p', [
       {
@@ -27,7 +23,10 @@
   }
 
   function send(path, params) {
-    if (localStorage.disableAnalytics === 'true') {
+    if (
+      localStorage.disableAnalytics === 'true' ||
+      window.location.hostname === 'localhost'
+    ) {
       console.log('Analytics disabled', path, params);
     }
 
