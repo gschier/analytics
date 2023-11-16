@@ -28,6 +28,7 @@
       window.location.hostname === 'localhost'
     ) {
       console.log('Analytics disabled', path, params);
+      return;
     }
 
     params.push({ name: 'id', value: website() });
