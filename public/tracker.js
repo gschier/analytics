@@ -11,7 +11,7 @@
 
   function page() {
     const { pathname, protocol, host } = window.location;
-    if (pathname === sessionStorage.lastPathName) return;
+    if (pathname === sessionStorage.lastPathName || !host) return;
     sessionStorage.lastPathName = pathname;
     send('/p', [
       {
