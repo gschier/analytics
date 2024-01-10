@@ -50,6 +50,18 @@ func SetupRouter() http.Handler {
 		RespondJSON(w, &counts)
 	})
 
+	r.Path("/api/popular_events").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siteId := r.URL.Query().Get("site")
+		counts := FindAnalyticsEventsPopular(
+			GetDB(),
+			r.Context(),
+			start(),
+			end(),
+			siteId,
+		)
+		RespondJSON(w, &counts)
+	})
+
 	r.Path("/api/live").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siteId := r.URL.Query().Get("site")
 		count := CountAnalyticsPageviewsRecent(GetDB(), r.Context(), siteId)
@@ -67,6 +79,10 @@ func SetupRouter() http.Handler {
 		platform := q.Get("os")
 		version := q.Get("v")
 		id, sid := GenerateIDAndSID(r, site)
+
+		if attributes == "" {
+			attributes = "{}"
+		}
 
 		event := AnalyticsEvent{
 			ID:          id,

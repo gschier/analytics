@@ -179,6 +179,47 @@ func FindAnalyticsPageviewsBuckets(db sqlx.QueryerContext, ctx context.Context, 
 	return buckets
 }
 
+type PopularEventCount struct {
+	Total      int64   `db:"count_total" json:"total"`
+	Unique     int64   `db:"count_unique" json:"unique"`
+	Name       *string `db:"name" json:"name"`
+	Platform   *string `db:"platform" json:"platform"`
+	Version    *string `db:"version" json:"version"`
+	Country    *string `db:"country_code" json:"country"`
+	ScreenSize *string `db:"screen_size" json:"screenSize"`
+}
+
+func FindAnalyticsEventsPopular(db sqlx.QueryerContext, ctx context.Context, start, end time.Time, websiteID string) []PopularEventCount {
+	var counts []PopularEventCount
+	err := sqlx.SelectContext(ctx, db, &counts, `
+		SELECT screen_size, 
+		       name,
+		       platform,
+		       version,
+		       country_code,
+			   COUNT(id)           AS count_total,
+			   COUNT(DISTINCT sid) AS count_unique
+		FROM analytics_events
+		WHERE country_code != '' 
+		  AND website_id = $1
+		  AND created_at >= $2
+		  AND created_at < $3
+		GROUP BY GROUPING SETS (
+		  (screen_size), 
+		  (country_code), 
+		  (name, platform, version), 
+		  ()
+	  	)
+		ORDER BY count_unique DESC
+		LIMIT 50;
+	`, websiteID, start, end)
+	if err != nil {
+		panic(err)
+	}
+
+	return counts
+}
+
 type PopularCount struct {
 	Total      int64   `db:"count_total" json:"total"`
 	Unique     int64   `db:"count_unique" json:"unique"`

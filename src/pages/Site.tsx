@@ -14,12 +14,14 @@ import { dateBetween } from '../util/date';
 import { useParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import useWebsite from '../hooks/use-website';
+import usePopularEvents from '../hooks/use-popular-events';
 
 const Site: React.FC = () => {
   const { id: websiteId } = useParams<{ id: string }>();
   const website = useWebsite(websiteId);
   const { data: rollups } = useRollups(websiteId);
-  const { data: popular } = usePopular(websiteId);
+  const { data: popularPaths } = usePopular(websiteId);
+  const { data: popularEvents } = usePopularEvents(websiteId);
   const currentUsers = useCurrentUsers(websiteId);
   const summaryStats = useSummaryStats(websiteId);
 
@@ -60,10 +62,10 @@ const Site: React.FC = () => {
           )}
         </div>
 
-        {popular && (
+        {popularPaths && (
           <HStack collapse space={3} align="start">
             <Table columns={['Country', 'Unique', 'Total']}>
-              {popular
+              {popularPaths
                 .filter((pp) => pp.country)
                 .slice(0, 6)
                 .map((pp) => (
@@ -75,7 +77,7 @@ const Site: React.FC = () => {
                 ))}
             </Table>
             <Table columns={['Screen Size', 'Unique', 'Total']}>
-              {popular
+              {popularPaths
                 .filter((pp) => pp.screenSize)
                 .slice(0, 6)
                 .map((pp) => (
@@ -89,9 +91,9 @@ const Site: React.FC = () => {
           </HStack>
         )}
 
-        {popular && (
+        {popularPaths && (
           <Table columns={['Path', 'Unique', 'Total']}>
-            {popular
+            {popularPaths
               .filter((pp) => pp.path)
               .slice(0, 10)
               .map((pp) => (
@@ -101,6 +103,20 @@ const Site: React.FC = () => {
                   </Link>
                   <Paragraph>{pp.unique}</Paragraph>
                   <Paragraph>{pp.total}</Paragraph>
+                </TableRow>
+              ))}
+          </Table>
+        )}
+        {popularEvents && (
+          <Table columns={['Event', 'Unique', 'Total']}>
+            {popularEvents
+              .filter((pe) => pe.name)
+              .slice(0, 10)
+              .map((pe, i) => (
+                <TableRow key={i}>
+                  <Paragraph>{pe.name}</Paragraph>
+                  <Paragraph>{pe.unique}</Paragraph>
+                  <Paragraph>{pe.total}</Paragraph>
                 </TableRow>
               ))}
           </Table>
