@@ -24,6 +24,7 @@ func GetDB() *sqlx.DB {
 	var err error
 	for i := 0; i < 5; i++ {
 		_db, err = sqlx.Connect("postgres", Config.DatabaseURL)
+		println("DATABASE URL", Config.DatabaseURL)
 		if err != nil {
 			logger.Warn("Failed to connect to database", "error", err)
 			time.Sleep(1 * time.Second)
@@ -145,12 +146,19 @@ var migrations = []Migration{{
 			-- Analytics tables don't have unique constraints, FKs, or PKs for fast inserts
 
 			CREATE TABLE analytics_events (
-			    id         VARCHAR(64)  NOT NULL,
-			    sid        VARCHAR(64)  NOT NULL,
-				website_id VARCHAR(40)  NOT NULL,
-			    created_at TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT NOW(),
-			    name       VARCHAR(64)  NOT NULL
+			    id           VARCHAR(64)                 NOT NULL,
+			    sid          VARCHAR(64)                 NOT NULL,
+				website_id   VARCHAR(40)                 NOT NULL,
+			    created_at   TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT NOW() NOT NULL ,
+			    name         VARCHAR(64)                 NOT NULL,
+			    attributes   JSONB                       NOT NULL,
+			    screen_size  VARCHAR(32)                 NOT NULL,
+			    country_code VARCHAR(2)                  NOT NULL,
+			    version      VARCHAR(32)                 NOT NULL,
+			    platform     VARCHAR(16)                 NOT NULL 
 			);
+
+
 			CREATE INDEX analytics_events__website_id_created_at ON analytics_events (website_id, created_at);
 
 			CREATE TABLE analytics_pageviews (
