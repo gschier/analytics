@@ -250,7 +250,7 @@ func FindAnalyticsPageviewsPopular(db sqlx.QueryerContext, ctx context.Context, 
 		  ()
 	  	)
 		ORDER BY count_unique DESC
-		LIMIT 50;
+		LIMIT 500;
 	`, websiteID, start, end)
 	if err != nil {
 		panic(err)
