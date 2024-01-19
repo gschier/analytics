@@ -138,5 +138,5 @@ func start() time.Time {
 }
 
 func end() time.Time {
-	return time.Now()
+	return time.Now().Add(60 * PeriodDay)
 }
