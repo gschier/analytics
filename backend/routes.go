@@ -103,11 +103,17 @@ func SetupRouter() http.Handler {
 	r.Path("/t/p").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()
 
+		path := q.Get("p")
 		site := q.Get("id")
-		path := strings.TrimSuffix(q.Get("p"), "/") // Ignore trailing slash
 		host := q.Get("h")
 		screensize := q.Get("xy")
 		timezone := q.Get("tz")
+
+		// Sanitize path
+		path = strings.TrimSuffix(path, "/")
+		if path == "" {
+			path = "/"
+		}
 
 		id, sid := GenerateIDAndSID(r, site)
 		pageview := AnalyticsPageview{
