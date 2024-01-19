@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/gorilla/mux"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -103,7 +104,7 @@ func SetupRouter() http.Handler {
 		q := r.URL.Query()
 
 		site := q.Get("id")
-		path := q.Get("p")
+		path := strings.TrimSuffix(q.Get("p"), "/") // Ignore trailing slash
 		host := q.Get("h")
 		screensize := q.Get("xy")
 		timezone := q.Get("tz")
