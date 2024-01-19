@@ -54,10 +54,7 @@ export const TableRow: React.FC<
       {React.Children.map(children, (contents, i) => (
         <td
           key={i}
-          className={classnames(
-            cellClass,
-            'text-gray-700 truncate w-full max-w-0',
-          )}>
+          className={classnames(cellClass, 'text-gray-700 truncate max-w-0')}>
           {contents}
         </td>
       ))}
