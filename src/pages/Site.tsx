@@ -108,14 +108,13 @@ const Site: React.FC = () => {
           </Table>
         )}
         {popularEvents && (
-          <Table columns={['Event', 'Version', 'Unique', 'Total']}>
+          <Table columns={['Event', 'Unique', 'Total']}>
             {popularEvents
               .filter((pe) => pe.name)
               .slice(0, 10)
               .map((pe, i) => (
                 <TableRow key={i}>
                   <Paragraph>{pe.name}</Paragraph>
-                  <Paragraph>{pe.version}</Paragraph>
                   <Paragraph>{pe.unique}</Paragraph>
                   <Paragraph>{pe.total}</Paragraph>
                 </TableRow>

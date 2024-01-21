@@ -195,7 +195,6 @@ func FindAnalyticsEventsPopular(db sqlx.QueryerContext, ctx context.Context, sta
 		SELECT screen_size, 
 		       name,
 		       platform,
-		       version,
 		       country_code,
 			   COUNT(id)           AS count_total,
 			   COUNT(DISTINCT sid) AS count_unique
@@ -207,7 +206,7 @@ func FindAnalyticsEventsPopular(db sqlx.QueryerContext, ctx context.Context, sta
 		GROUP BY GROUPING SETS (
 		  (screen_size), 
 		  (country_code), 
-		  (name, platform, version), 
+		  (name, platform), 
 		  ()
 	  	)
 		ORDER BY count_unique DESC
