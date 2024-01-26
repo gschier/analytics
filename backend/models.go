@@ -192,23 +192,15 @@ type PopularEventCount struct {
 func FindAnalyticsEventsPopular(db sqlx.QueryerContext, ctx context.Context, start, end time.Time, websiteID string) []PopularEventCount {
 	var counts []PopularEventCount
 	err := sqlx.SelectContext(ctx, db, &counts, `
-		SELECT screen_size, 
-		       name,
-		       platform,
-		       country_code,
+		SELECT  name,
 			   COUNT(id)           AS count_total,
 			   COUNT(DISTINCT sid) AS count_unique
 		FROM analytics_events
-		WHERE country_code != '' 
-		  AND website_id = $1
+		WHERE 
+		  website_id = $1
 		  AND created_at >= $2
 		  AND created_at < $3
-		GROUP BY GROUPING SETS (
-		  (screen_size), 
-		  (country_code), 
-		  (name, platform), 
-		  ()
-	  	)
+		GROUP BY name
 		ORDER BY count_unique DESC
 		LIMIT 50;
 	`, websiteID, start, end)
