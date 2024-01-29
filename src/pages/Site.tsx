@@ -111,7 +111,6 @@ const Site: React.FC = () => {
           <Table columns={['Event', 'Unique', 'Total']}>
             {popularEvents
               .filter((pe) => pe.name)
-              .slice(0, 10)
               .map((pe, i) => (
                 <TableRow key={i}>
                   <Paragraph>{pe.name}</Paragraph>
