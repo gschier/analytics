@@ -3,9 +3,7 @@ import classnames from 'classnames';
 import Title from './Title';
 import { HStack } from './Stacks';
 import Link from './Link';
-import Home from '../pages/Home';
 import Button from './Button';
-import Icon from './Icon';
 import { Website } from '../hooks/use-websites';
 import { useTheme } from '../hooks/use-theme';
 

@@ -9,7 +9,7 @@ const Title: React.FC<HTMLAttributes<HTMLHeadingElement>> = ({
     <h1
       {...props}
       className={classnames(
-        'text-3xl leading-none font-semibold text-gray-800',
+        'text-xl md:text-3xl leading-none font-semibold text-gray-800',
         className,
       )}
     />

@@ -1,12 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import Navbar from './components/Navbar';
 import Site from './pages/Site';
 import Design from './pages/Design';
 import Home from './pages/Home';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Helmet } from 'react-helmet';
-import { HStack, VStack } from './components/Stacks';
 
 const queryClient = new QueryClient();
 
