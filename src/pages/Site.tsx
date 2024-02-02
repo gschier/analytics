@@ -62,7 +62,7 @@ const Site: React.FC = () => {
           )}
         </div>
 
-        {popularPaths && (
+        {popularPaths && popularPaths.length > 0 && (
           <HStack collapse space={3} align="start">
             <Table columns={['Country', 'Unique', 'Total']}>
               {popularPaths
