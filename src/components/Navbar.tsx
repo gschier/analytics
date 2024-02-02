@@ -21,7 +21,7 @@ const Navbar: React.FC<NavbarProps & HTMLAttributes<HTMLElement>> = ({
     <nav
       {...props}
       className={classnames('rounded font-medium py-4 px-4 mb-4', className)}>
-      <HStack>
+      <HStack align="center">
         <Title>
           <HStack space={2} align="center">
             {website ? (
