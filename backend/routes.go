@@ -116,6 +116,9 @@ func SetupRouter() http.Handler {
 			path = "/"
 		}
 
+		// Sanitize referrer
+		referrer = strings.TrimSuffix(referrer, "/")
+
 		id, sid := GenerateIDAndSID(r, site)
 		pageview := AnalyticsPageview{
 			ID:          id,
