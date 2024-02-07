@@ -108,6 +108,7 @@ func SetupRouter() http.Handler {
 		host := q.Get("h")
 		screensize := q.Get("xy")
 		timezone := q.Get("tz")
+		referrer := q.Get("r")
 
 		// Sanitize path
 		path = strings.TrimSuffix(path, "/")
@@ -125,6 +126,7 @@ func SetupRouter() http.Handler {
 			ScreenSize:  screensize,
 			CountryCode: TimezoneToCountryCode(timezone),
 			UserAgent:   r.UserAgent(),
+			Referrer:    referrer,
 		}
 		CreateAnalyticsPageview(GetDB(), r.Context(), &pageview)
 		RespondText(w, "OK")

@@ -190,4 +190,14 @@ var migrations = []Migration{{
 
 		return err
 	},
+}, {
+	Name: "add_referrer",
+	Forward: func(ctx context.Context, db *sqlx.DB) error {
+		_, err := db.ExecContext(ctx, `
+			ALTER TABLE analytics_pageviews
+				ADD COLUMN referrer       VARCHAR(1024)   NOT NULL DEFAULT ''
+		`)
+
+		return err
+	},
 }}

@@ -49,6 +49,7 @@ type AnalyticsPageview struct {
 	ScreenSize  string    `db:"screen_size"  json:"screenSize"`
 	CountryCode string    `db:"country_code" json:"countryCode"`
 	UserAgent   string    `db:"user_agent"   json:"userAgent"`
+	Referrer    string    `db:"referrer"     json:"referrer"`
 }
 
 func GetAccountByEmail(db sqlx.QueryerContext, ctx context.Context, email string) (*Account, bool) {

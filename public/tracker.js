@@ -19,6 +19,7 @@
         value: `${protocol}//${host}`,
       },
       { name: 'p', value: pathname },
+      { name: 'r', value: document.referrer },
     ]);
   }
 
@@ -38,6 +39,7 @@
     });
     params.push({ name: 'xy', value: screensize() });
     const qs = params
+      .filter(Boolean)
       .map((v) => `${v.name}=${encodeURIComponent(v.value)}`)
       .join('&');
     const url = `${scriptOrigin()}/t${path}?${qs}`;
