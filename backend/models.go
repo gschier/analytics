@@ -254,8 +254,8 @@ func FindAnalyticsPageviewsPopular(db sqlx.QueryerContext, ctx context.Context, 
 func CreateAnalyticsPageview(db sqlx.ExtContext, ctx context.Context, pageview *AnalyticsPageview) *AnalyticsPageview {
 	pageview.CreatedAt = time.Now()
 	_, err := sqlx.NamedExecContext(ctx, db, `
-		INSERT INTO analytics_pageviews (id, website_id, sid, created_at, host, path, screen_size, country_code, user_agent) 
-		VALUES (:id, :website_id, :sid, :created_at, :host, :path, :screen_size, :country_code, :user_agent)
+		INSERT INTO analytics_pageviews (id, website_id, sid, created_at, host, path, screen_size, country_code, user_agent, referrer) 
+		VALUES (:id, :website_id, :sid, :created_at, :host, :path, :screen_size, :country_code, :user_agent, :referrer)
 	`, pageview)
 	if err != nil {
 		panic(err)
