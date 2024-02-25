@@ -34,17 +34,21 @@ const Site: React.FC = () => {
     <>
       <Navbar website={website} />
       <VStack space={6} className="mx-4 my-6">
-        <HStack space={3}>
-          <Card title="Live" className="w-full">
-            <HugeText>{currentUsers.data}</HugeText>
-          </Card>
-          <Card title="Visitors" className="w-full">
-            <HugeText>{summaryStats?.unique}</HugeText>
-          </Card>
-          <Card title="Views" className="w-full">
-            <HugeText>{summaryStats?.total}</HugeText>
-          </Card>
-        </HStack>
+        {currentUsers.data ||
+          summaryStats?.unique ||
+          (summaryStats?.total && (
+            <HStack space={3}>
+              <Card title="Live" className="w-full">
+                <HugeText>{currentUsers.data}</HugeText>
+              </Card>
+              <Card title="Visitors" className="w-full">
+                <HugeText>{summaryStats?.unique}</HugeText>
+              </Card>
+              <Card title="Views" className="w-full">
+                <HugeText>{summaryStats?.total}</HugeText>
+              </Card>
+            </HStack>
+          ))}
 
         {rollups?.some((r) => r.total > 0) && (
           <div className="w-full h-64">
