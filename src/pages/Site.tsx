@@ -109,7 +109,7 @@ const Site: React.FC = () => {
             ))}
           </Table>
         )}
-        {events.length && (
+        {events.length > 0 && (
           <Table columns={['Event', 'Unique', 'Total']}>
             {events.map((pe, i) => (
               <TableRow key={i}>
