@@ -24,6 +24,11 @@ const Site: React.FC = () => {
   const { data: popularEvents } = usePopularEvents(websiteId);
   const currentUsers = useCurrentUsers(websiteId);
   const summaryStats = useSummaryStats(websiteId);
+  const countries = popularPaths?.filter((pp) => pp.country).slice(0, 6) ?? [];
+  const screenSizes =
+    popularPaths?.filter((pp) => pp.screenSize).slice(0, 6) ?? [];
+  const paths = popularPaths?.filter((pp) => pp.path).slice(0, 10) ?? [];
+  const events = popularEvents?.filter((pe) => pe.name) ?? [];
 
   return (
     <>
@@ -41,8 +46,8 @@ const Site: React.FC = () => {
           </Card>
         </HStack>
 
-        <div className="w-full h-64">
-          {rollups && (
+        {rollups?.some((r) => r.total > 0) && (
+          <div className="w-full h-64">
             <ParentSize>
               {({ width, height }) => (
                 <TestChart
@@ -59,65 +64,56 @@ const Site: React.FC = () => {
                 />
               )}
             </ParentSize>
-          )}
-        </div>
-
-        {popularPaths && popularPaths.length > 0 && (
-          <HStack collapse space={3} align="start">
-            <Table columns={['Country', 'Unique', 'Total']}>
-              {popularPaths
-                .filter((pp) => pp.country)
-                .slice(0, 6)
-                .map((pp) => (
-                  <TableRow key={pp.country}>
-                    <Paragraph>{pp.country}</Paragraph>
-                    <Paragraph>{pp.unique}</Paragraph>
-                    <Paragraph>{pp.total}</Paragraph>
-                  </TableRow>
-                ))}
-            </Table>
-            <Table columns={['Screen Size', 'Unique', 'Total']}>
-              {popularPaths
-                .filter((pp) => pp.screenSize)
-                .slice(0, 6)
-                .map((pp) => (
-                  <TableRow key={pp.screenSize}>
-                    <Paragraph>{pp.screenSize}</Paragraph>
-                    <Paragraph>{pp.unique}</Paragraph>
-                    <Paragraph>{pp.total}</Paragraph>
-                  </TableRow>
-                ))}
-            </Table>
-          </HStack>
+          </div>
         )}
 
-        {popularPaths && (
-          <Table columns={['Path', 'Unique', 'Total']}>
-            {popularPaths
-              .filter((pp) => pp.path)
-              .slice(0, 10)
-              .map((pp) => (
-                <TableRow key={pp.path}>
-                  <Link external to={`${pp.host}${pp.path}`}>
-                    {`${pp.path}`}
-                  </Link>
+        <HStack collapse space={3} align="start">
+          {countries.length > 0 && (
+            <Table columns={['Country', 'Unique', 'Total']}>
+              {countries.map((pp) => (
+                <TableRow key={pp.country}>
+                  <Paragraph>{pp.country}</Paragraph>
                   <Paragraph>{pp.unique}</Paragraph>
                   <Paragraph>{pp.total}</Paragraph>
                 </TableRow>
               ))}
-          </Table>
-        )}
-        {popularEvents && (
-          <Table columns={['Event', 'Unique', 'Total']}>
-            {popularEvents
-              .filter((pe) => pe.name)
-              .map((pe, i) => (
-                <TableRow key={i}>
-                  <Paragraph>{pe.name}</Paragraph>
-                  <Paragraph>{pe.unique}</Paragraph>
-                  <Paragraph>{pe.total}</Paragraph>
+            </Table>
+          )}
+          {screenSizes.length > 0 && (
+            <Table columns={['Screen Size', 'Unique', 'Total']}>
+              {screenSizes.map((pp) => (
+                <TableRow key={pp.screenSize}>
+                  <Paragraph>{pp.screenSize}</Paragraph>
+                  <Paragraph>{pp.unique}</Paragraph>
+                  <Paragraph>{pp.total}</Paragraph>
                 </TableRow>
               ))}
+            </Table>
+          )}
+        </HStack>
+
+        {paths.length > 0 && (
+          <Table columns={['Path', 'Unique', 'Total']}>
+            {paths.map((pp) => (
+              <TableRow key={pp.path}>
+                <Link external to={`${pp.host}${pp.path}`}>
+                  {`${pp.path}`}
+                </Link>
+                <Paragraph>{pp.unique}</Paragraph>
+                <Paragraph>{pp.total}</Paragraph>
+              </TableRow>
+            ))}
+          </Table>
+        )}
+        {events.length && (
+          <Table columns={['Event', 'Unique', 'Total']}>
+            {events.map((pe, i) => (
+              <TableRow key={i}>
+                <Paragraph>{pe.name}</Paragraph>
+                <Paragraph>{pe.unique}</Paragraph>
+                <Paragraph>{pe.total}</Paragraph>
+              </TableRow>
+            ))}
           </Table>
         )}
       </VStack>
