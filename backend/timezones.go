@@ -1,25 +1,18 @@
 package main
 
-import (
-	"fmt"
-)
-
 func TimezoneToCountryCode(tz string) string {
-	c := timezoneToCountryCode[tz]
-	if c == "" {
-		fmt.Printf("[timezone] Failed to get country from timezone '%s'\n", tz)
-	}
-	return c
+	return timezoneToCountryCode[tz]
 }
 
 // timezoneToCountryCode was parsed from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-//  n```js
-//   const mapping = {};
-//   document.querySelectorAll('table tbody')[0].querySelectorAll('tr').forEach(tr => {
-//     const tds = tr.querySelectorAll('td');
-//     mapping[tds[2].innerText] = tds[0].innerText;
-//   });
-//   ```
+//
+//	```js
+//	 const mapping = {};
+//	 document.querySelectorAll('table tbody')[0].querySelectorAll('tr').forEach(tr => {
+//	   const tds = tr.querySelectorAll('td');
+//	   mapping[tds[2].innerText] = tds[0].innerText;
+//	 });
+//	 ```
 var timezoneToCountryCode = map[string]string{
 	"Africa/Abidjan":                   "CI",
 	"Africa/Accra":                     "GH",
