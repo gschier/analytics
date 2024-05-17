@@ -58,9 +58,9 @@ func migrate(ctx context.Context, db *sqlx.DB) error {
 
 	// Create migrations table if it doesn't exist
 	_, err := db.ExecContext(ctx, `
-		CREATE TABLE IF NOT EXISTS migrations (
+		CREATE TABLE if NOT EXISTS migrations (
 			id         TEXT PRIMARY KEY DEFAULT CONCAT('mgtn_', REPLACE(gen_random_uuid()::TEXT, '-', '')),
-			name       TEXT NOT NULL UNIQUE,
+			NAME       TEXT NOT NULL UNIQUE,
 			applied_at TIMESTAMP(3) WITH TIME ZONE
 		);
 	`)
@@ -120,8 +120,8 @@ var migrations = []Migration{{
 		_, err := db.ExecContext(ctx, `
 			CREATE TABLE accounts (
 			    id              VARCHAR(40)  PRIMARY KEY ,
-			    created_at      TIMESTAMP(3) WITH TIME ZONE NOT NULL DEFAULT NOW(),
-			    updated_at      TIMESTAMP(3) WITH TIME ZONE NOT NULL DEFAULT NOW(),
+			    created_at      TIMESTAMP(3) WITH TIME ZONE NOT NULL DEFAULT now(),
+			    updated_at      TIMESTAMP(3) WITH TIME ZONE NOT NULL DEFAULT now(),
 			    email           VARCHAR(512) NOT NULL UNIQUE,
 				hashed_password VARCHAR(256) NOT NULL
 			);
@@ -129,16 +129,16 @@ var migrations = []Migration{{
 			CREATE TABLE websites (
 			    id         VARCHAR(40)  PRIMARY KEY,
 			    account_id VARCHAR(40)  NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
-			    created_at TIMESTAMP(3) WITH TIME ZONE NOT NULL DEFAULT NOW(),
-			    updated_at TIMESTAMP(3) WITH TIME ZONE NOT NULL DEFAULT NOW(),
+			    created_at TIMESTAMP(3) WITH TIME ZONE NOT NULL DEFAULT now(),
+			    updated_at TIMESTAMP(3) WITH TIME ZONE NOT NULL DEFAULT now(),
 				domain     VARCHAR(256) NOT NULL UNIQUE
 			);
 
 			CREATE TABLE sessions (
 			    id           VARCHAR(40) PRIMARY KEY,
 			    account_id   VARCHAR(40) NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
-			    refreshed_at TIMESTAMP(3) WITH TIME ZONE NOT NULL DEFAULT NOW(),
-			    created_at   TIMESTAMP(3) WITH TIME ZONE NOT NULL DEFAULT NOW()
+			    refreshed_at TIMESTAMP(3) WITH TIME ZONE NOT NULL DEFAULT now(),
+			    created_at   TIMESTAMP(3) WITH TIME ZONE NOT NULL DEFAULT now()
 			);
 
 			-- Analytics tables don't have unique constraints, FKs, or PKs for fast inserts
@@ -147,7 +147,7 @@ var migrations = []Migration{{
 			    id         VARCHAR(64)  NOT NULL,
 			    sid        VARCHAR(64)  NOT NULL,
 				website_id VARCHAR(40)  NOT NULL,
-			    created_at TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT NOW(),
+			    created_at TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT now(),
 			    name       VARCHAR(64)  NOT NULL
 			);
 			CREATE INDEX analytics_events__website_id_created_at ON analytics_events (website_id, created_at);
@@ -156,7 +156,7 @@ var migrations = []Migration{{
 			    id           VARCHAR(64)  NOT NULL,
 			    sid          VARCHAR(64)  NOT NULL,
 				website_id   VARCHAR(40)  NOT NULL,
-			    created_at   TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT NOW(),
+			    created_at   TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT now(),
 				host         VARCHAR(512) NOT NULL,
 				path         TEXT         NOT NULL,
 				screen_size  VARCHAR(32)  NOT NULL,
@@ -196,6 +196,28 @@ var migrations = []Migration{{
 		_, err := db.ExecContext(ctx, `
 			ALTER TABLE analytics_pageviews
 				ADD COLUMN referrer       VARCHAR(1024)   NOT NULL DEFAULT ''
+		`)
+
+		return err
+	},
+}, {
+	Name: "add_uid",
+	Forward: func(ctx context.Context, db *sqlx.DB) error {
+		_, err := db.ExecContext(ctx, `
+			ALTER TABLE analytics_events
+			    ADD COLUMN uid  VARCHAR(64)  NOT NULL DEFAULT '';
+			ALTER TABLE analytics_pageviews
+			    ADD COLUMN uid  VARCHAR(64)  NOT NULL DEFAULT '';
+		`)
+
+		return err
+	},
+}, {
+	Name: "backfill_uid",
+	Forward: func(ctx context.Context, db *sqlx.DB) error {
+		_, err := db.ExecContext(ctx, `
+			UPDATE analytics_pageviews SET uid = sid WHERE uid = '';
+			UPDATE analytics_events SET uid = sid WHERE uid = '';
 		`)
 
 		return err

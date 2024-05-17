@@ -93,6 +93,9 @@ func LoggingMiddleware(logger *slog.Logger) func(http.Handler) http.Handler {
 			logger.Debug(
 				"Request completed to "+r.URL.EscapedPath(),
 				"status", wrapped.status,
+				"headers", r.Header,
+				"addr", r.RemoteAddr,
+				"url", r.URL.String(),
 				"method", r.Method,
 				"path", r.URL.EscapedPath(),
 				"duration", time.Since(start),

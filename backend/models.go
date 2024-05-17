@@ -31,6 +31,7 @@ type AnalyticsEvent struct {
 	WebsiteID   string    `db:"website_id"   json:"websiteId"`
 	CreatedAt   time.Time `db:"created_at"   json:"createdAt"`
 	SID         string    `db:"sid"          json:"sid"`
+	UID         string    `db:"uid"          json:"uid"`
 	Name        string    `db:"name"         json:"name"`
 	Attributes  string    `db:"attributes"   json:"attributes"`
 	ScreenSize  string    `db:"screen_size"  json:"screenSize"`
@@ -42,6 +43,7 @@ type AnalyticsEvent struct {
 type AnalyticsPageview struct {
 	ID          string    `db:"id"           json:"id"`
 	SID         string    `db:"sid"          json:"sid"`
+	UID         string    `db:"uid"          json:"uid"`
 	WebsiteID   string    `db:"website_id"   json:"websiteId"`
 	CreatedAt   time.Time `db:"created_at"   json:"createdAt"`
 	Host        string    `db:"host"         json:"host"`
@@ -95,8 +97,8 @@ func CreateAnalyticsEvent(db sqlx.ExtContext, ctx context.Context, event *Analyt
 	event.CreatedAt = time.Now()
 
 	_, err := sqlx.NamedExecContext(ctx, db, `
-		INSERT INTO analytics_events (id, sid, website_id, created_at, name, attributes, screen_size, country_code, platform, version) 
-		VALUES (:id, :sid, :website_id, :created_at, :name, :attributes, :screen_size, :country_code, :platform, :version)
+		INSERT INTO analytics_events (id, sid, uid, website_id, created_at, name, attributes, screen_size, country_code, platform, version) 
+		VALUES (:id, :sid, :uid, :website_id, :created_at, :name, :attributes, :screen_size, :country_code, :platform, :version)
 	`, &event)
 	if err != nil {
 		panic(err)
@@ -254,8 +256,8 @@ func FindAnalyticsPageviewsPopular(db sqlx.QueryerContext, ctx context.Context, 
 func CreateAnalyticsPageview(db sqlx.ExtContext, ctx context.Context, pageview *AnalyticsPageview) *AnalyticsPageview {
 	pageview.CreatedAt = time.Now()
 	_, err := sqlx.NamedExecContext(ctx, db, `
-		INSERT INTO analytics_pageviews (id, website_id, sid, created_at, host, path, screen_size, country_code, user_agent, referrer) 
-		VALUES (:id, :website_id, :sid, :created_at, :host, :path, :screen_size, :country_code, :user_agent, :referrer)
+		INSERT INTO analytics_pageviews (id, website_id, sid, uid, created_at, host, path, screen_size, country_code, user_agent, referrer) 
+		VALUES (:id, :website_id, :sid, :uid, :created_at, :host, :path, :screen_size, :country_code, :user_agent, :referrer)
 	`, pageview)
 	if err != nil {
 		panic(err)

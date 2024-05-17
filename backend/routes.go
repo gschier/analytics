@@ -81,6 +81,11 @@ func SetupRouter() http.Handler {
 		version := q.Get("v")
 		id, sid := GenerateIDAndSID(r, site)
 
+		uid := q.Get("u")
+		if uid == "" {
+			uid = sid
+		}
+
 		if attributes == "" {
 			attributes = "{}"
 		}
@@ -88,6 +93,7 @@ func SetupRouter() http.Handler {
 		event := AnalyticsEvent{
 			ID:          id,
 			SID:         sid,
+			UID:         uid,
 			WebsiteID:   site,
 			Name:        eventName,
 			Attributes:  attributes,
@@ -109,6 +115,12 @@ func SetupRouter() http.Handler {
 		screensize := q.Get("xy")
 		timezone := q.Get("tz")
 		referrer := q.Get("r")
+		id, sid := GenerateIDAndSID(r, site)
+
+		uid := q.Get("u")
+		if uid == "" {
+			uid = sid
+		}
 
 		// Sanitize path
 		path = strings.TrimSuffix(path, "/")
@@ -119,10 +131,10 @@ func SetupRouter() http.Handler {
 		// Sanitize referrer
 		referrer = strings.TrimSuffix(referrer, "/")
 
-		id, sid := GenerateIDAndSID(r, site)
 		pageview := AnalyticsPageview{
 			ID:          id,
 			SID:         sid,
+			UID:         uid,
 			WebsiteID:   site,
 			Host:        host,
 			Path:        path,
