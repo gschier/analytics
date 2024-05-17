@@ -31,7 +31,6 @@ func GetIPAddress(r *http.Request) string {
 		ipAndPort = strings.Split(forwardedFor, ",")[0]
 	}
 
-	logger.Info("Forwarded for: " + ipAndPort)
 	onlyIP := strings.Split(ipAndPort, ":")[0]
 	return onlyIP
 }
