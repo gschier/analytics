@@ -27,8 +27,11 @@ func GenerateIDAndSID(r *http.Request, siteID string) (string, string) {
 func GetIPAddress(r *http.Request) string {
 	ipAndPort := r.RemoteAddr
 	if forwardedFor := r.Header.Get("X-Forwarded-For"); forwardedFor != "" {
-		ipAndPort = forwardedFor
+		// Leftmost IP in IP,IP,IP is the originating client
+		ipAndPort = strings.Split(forwardedFor, ",")[0]
 	}
 
-	return strings.Split(ipAndPort, ":")[0]
+	logger.Info("Forwarded for: " + ipAndPort)
+	onlyIP := strings.Split(ipAndPort, ":")[0]
+	return onlyIP
 }
