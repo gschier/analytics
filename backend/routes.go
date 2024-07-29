@@ -11,6 +11,10 @@ import (
 func SetupRouter() http.Handler {
 	r := mux.NewRouter()
 
+	r.Path("/robots.txt").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("User-agent: *\nDisallow: /"))
+	})
+
 	r.Path("/script.js").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "public, max-age=86400")
 		http.ServeFile(w, r, "./dist/tracker.js")
