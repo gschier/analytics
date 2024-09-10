@@ -67,6 +67,18 @@ func SetupRouter() http.Handler {
 		RespondJSON(w, &counts)
 	})
 
+	r.Path("/api/popular_referrers").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siteId := r.URL.Query().Get("site")
+		counts := FindAnalyticsReferrersPopular(
+			GetDB(),
+			r.Context(),
+			start(),
+			end(),
+			siteId,
+		)
+		RespondJSON(w, &counts)
+	})
+
 	r.Path("/api/live").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siteId := r.URL.Query().Get("site")
 		count := CountAnalyticsPageviewsRecent(GetDB(), r.Context(), siteId)

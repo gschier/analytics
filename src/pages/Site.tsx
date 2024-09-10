@@ -3,6 +3,7 @@ import { HStack, VStack } from '../components/Stacks';
 import ParentSize from '@visx/responsive/lib/components/ParentSize';
 import TestChart from '../components/TestChart';
 import Card from '../components/Card';
+import usePopularReferrers from '../hooks/use-popular-referrers';
 import useRollups from '../hooks/use-rollups';
 import { Table, TableRow } from '../components/Table';
 import { HugeText, Paragraph } from '../components/Typography';
@@ -22,6 +23,7 @@ const Site: React.FC = () => {
   const { data: rollups } = useRollups(websiteId);
   const { data: popularPaths } = usePopular(websiteId);
   const { data: popularEvents } = usePopularEvents(websiteId);
+  const { data: popularReferrers } = usePopularReferrers(websiteId);
   const currentUsers = useCurrentUsers(websiteId);
   const summaryStats = useSummaryStats(websiteId);
   const countries = popularPaths?.filter((pp) => pp.country).slice(0, 6) ?? [];
@@ -29,6 +31,7 @@ const Site: React.FC = () => {
     popularPaths?.filter((pp) => pp.screenSize).slice(0, 6) ?? [];
   const paths = popularPaths?.filter((pp) => pp.path).slice(0, 10) ?? [];
   const events = popularEvents?.filter((pe) => pe.name) ?? [];
+  const referrers = popularReferrers?.filter((pe) => pe.referrer) ?? [];
 
   return (
     <>
@@ -115,6 +118,17 @@ const Site: React.FC = () => {
             {events.map((pe, i) => (
               <TableRow key={i}>
                 <Paragraph>{pe.name}</Paragraph>
+                <Paragraph>{pe.unique}</Paragraph>
+                <Paragraph>{pe.total}</Paragraph>
+              </TableRow>
+            ))}
+          </Table>
+        )}
+        {referrers.length > 0 && (
+          <Table columns={['Referrer', 'Unique', 'Total']}>
+            {referrers.map((pe, i) => (
+              <TableRow key={i}>
+                <Paragraph>{pe.referrer}</Paragraph>
                 <Paragraph>{pe.unique}</Paragraph>
                 <Paragraph>{pe.total}</Paragraph>
               </TableRow>

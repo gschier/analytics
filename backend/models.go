@@ -182,14 +182,38 @@ func FindAnalyticsPageviewsBuckets(db sqlx.QueryerContext, ctx context.Context, 
 	return buckets
 }
 
+type PopularReferrerCount struct {
+	Total    int64   `db:"count_total" json:"total"`
+	Unique   int64   `db:"count_unique" json:"unique"`
+	Referrer *string `db:"referrer" json:"referrer"`
+}
+
+func FindAnalyticsReferrersPopular(db sqlx.QueryerContext, ctx context.Context, start, end time.Time, websiteID string) []PopularReferrerCount {
+	var counts []PopularReferrerCount
+	err := sqlx.SelectContext(ctx, db, &counts, `
+		SELECT  referrer,
+			   COUNT(id)           AS count_total,
+			   COUNT(DISTINCT sid) AS count_unique
+		FROM analytics_pageviews
+		WHERE 
+		  website_id = $1
+		  AND created_at >= $2
+		  AND created_at < $3
+		GROUP BY referrer
+		ORDER BY count_unique DESC
+		LIMIT 50;
+	`, websiteID, start, end)
+	if err != nil {
+		panic(err)
+	}
+
+	return counts
+}
+
 type PopularEventCount struct {
-	Total      int64   `db:"count_total" json:"total"`
-	Unique     int64   `db:"count_unique" json:"unique"`
-	Name       *string `db:"name" json:"name"`
-	Platform   *string `db:"platform" json:"platform"`
-	Version    *string `db:"version" json:"version"`
-	Country    *string `db:"country_code" json:"country"`
-	ScreenSize *string `db:"screen_size" json:"screenSize"`
+	Total  int64   `db:"count_total" json:"total"`
+	Unique int64   `db:"count_unique" json:"unique"`
+	Name   *string `db:"name" json:"name"`
 }
 
 func FindAnalyticsEventsPopular(db sqlx.QueryerContext, ctx context.Context, start, end time.Time, websiteID string) []PopularEventCount {

@@ -1,11 +1,7 @@
 import { useQuery } from 'react-query';
 
 export interface PopularCount {
-  country: string;
-  screenSize: string;
   name: string;
-  platform: string | null;
-  version: string | null;
   total: number | null;
   unique: number | null;
 }
