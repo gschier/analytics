@@ -173,7 +173,7 @@ func SetupRouter() http.Handler {
 }
 
 func start() time.Time {
-	return time.Now().Add(-7 * PeriodDay)
+	return time.Now().Add(-1 * PeriodDay)
 }
 
 func end() time.Time {
