@@ -37,7 +37,7 @@ func SetupRouter() http.Handler {
 			r.Context(),
 			start(),
 			end(),
-			PeriodHour,
+			PeriodDay,
 			siteId,
 		)
 		RespondJSON(w, &rollups)
@@ -173,7 +173,7 @@ func SetupRouter() http.Handler {
 }
 
 func start() time.Time {
-	return time.Now().Add(-1 * PeriodDay)
+	return time.Now().Add(-60 * PeriodDay)
 }
 
 func end() time.Time {
