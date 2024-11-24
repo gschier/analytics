@@ -3,8 +3,9 @@ package main
 import (
 	"crypto/sha1"
 	"fmt"
+	"github.com/sebest/xff"
+	"net"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -25,12 +26,12 @@ func GenerateIDAndSID(r *http.Request, siteID string) (string, string) {
 }
 
 func GetIPAddress(r *http.Request) string {
-	ipAndPort := r.RemoteAddr
-	if forwardedFor := r.Header.Get("X-Forwarded-For"); forwardedFor != "" {
-		// Leftmost IP in IP,IP,IP is the originating client
-		ipAndPort = strings.Split(forwardedFor, ",")[0]
+	addr := xff.GetRemoteAddr(r)
+	host, _, err := net.SplitHostPort(addr)
+	if err != nil {
+		NewLogger("ip").WarnContext(r.Context(), "Failed to split host and port", "error", err)
+		return addr
 	}
 
-	onlyIP := strings.Split(ipAndPort, ":")[0]
-	return onlyIP
+	return host
 }
