@@ -20,6 +20,7 @@
 
   function send(path, params) {
     params.set('id', website());
+    params.set('u', uid());
     params.set('tz', Intl.DateTimeFormat().resolvedOptions().timeZone);
     params.set('xy', screensize());
     const url = `${scriptOrigin()}/t${path}`;
@@ -52,6 +53,10 @@
 
   function website() {
     return script().getAttribute('data-website');
+  }
+
+  function uid() {
+    return script().getAttribute('data-uid');
   }
 
   function scriptOrigin() {
