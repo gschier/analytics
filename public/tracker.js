@@ -1,49 +1,38 @@
-(function () {
+(function() {
   function event(name, attributes) {
-    send('/e', [
-      { name: 'e', value: name },
-      {
-        name: 'a',
-        value: JSON.stringify(attributes || {}),
-      },
-    ]);
+    const params = new URLSearchParams();
+    params.set('e', name);
+    if (attributes) params.set('a', JSON.stringify(attributes));
+    send('/e', params);
   }
 
   function page() {
     const { pathname, protocol, host } = window.location;
     if (pathname === sessionStorage.lastPathName || !host) return;
     sessionStorage.lastPathName = pathname;
-    send('/p', [
-      {
-        name: 'h',
-        value: `${protocol}//${host}`,
-      },
-      { name: 'p', value: pathname },
-      { name: 'r', value: document.referrer },
-    ]);
+
+    const params = new URLSearchParams();
+    params.set('h', `${protocol}//${host}`);
+    params.set('p', pathname);
+    params.set('r', document.referrer);
+    send('/p', params);
   }
 
   function send(path, params) {
+    params.set('id', website());
+    params.set('tz', Intl.DateTimeFormat().resolvedOptions().timeZone);
+    params.set('xy', screensize());
+    const url = `${scriptOrigin()}/t${path}`;
+
     if (
       localStorage.disableAnalytics === 'true' ||
       window.location.hostname === 'localhost'
     ) {
-      console.log('Analytics disabled', path, params);
+      console.log('Analytics disabled', url, params.toString());
       return;
     }
 
-    params.push({ name: 'id', value: website() });
-    params.push({
-      name: 'tz',
-      value: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    });
-    params.push({ name: 'xy', value: screensize() });
-    const qs = params
-      .filter(Boolean)
-      .map((v) => `${v.name}=${encodeURIComponent(v.value)}`)
-      .join('&');
-    const url = `${scriptOrigin()}/t${path}?${qs}`;
-    fetch(url, { mode: 'no-cors' }).catch((err) => console.log('Error:', err));
+    navigator.sendBeacon(url, params);
   }
 
   let _script = null;

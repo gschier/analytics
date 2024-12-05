@@ -85,19 +85,19 @@ func SetupRouter() http.Handler {
 		RespondJSON(w, &count)
 	})
 
-	r.Path("/t/e").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		q := r.URL.Query()
+	r.Path("/t/e").Methods(http.MethodGet, http.MethodPost).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_ = r.ParseForm()
 
-		site := q.Get("id")
-		eventName := q.Get("e")
-		attributes := q.Get("a")
-		screensize := q.Get("xy")
-		timezone := q.Get("tz")
-		platform := q.Get("os")
-		version := q.Get("v")
+		site := r.Form.Get("id")
+		eventName := r.Form.Get("e")
+		attributes := r.Form.Get("a")
+		screensize := r.Form.Get("xy")
+		timezone := r.Form.Get("tz")
+		platform := r.Form.Get("os")
+		version := r.Form.Get("v")
 		id, sid := GenerateIDAndSID(r, site)
 
-		uid := q.Get("u")
+		uid := r.Form.Get("u")
 		if uid == "" {
 			uid = sid
 		}
@@ -122,18 +122,18 @@ func SetupRouter() http.Handler {
 		RespondText(w, "OK")
 	})
 
-	r.Path("/t/p").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		q := r.URL.Query()
+	r.Path("/t/p").Methods(http.MethodGet, http.MethodPost).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_ = r.ParseForm()
 
-		path := q.Get("p")
-		site := q.Get("id")
-		host := q.Get("h")
-		screensize := q.Get("xy")
-		timezone := q.Get("tz")
-		referrer := q.Get("r")
+		path := r.Form.Get("p")
+		site := r.Form.Get("id")
+		host := r.Form.Get("h")
+		screensize := r.Form.Get("xy")
+		timezone := r.Form.Get("tz")
+		referrer := r.Form.Get("r")
 		id, sid := GenerateIDAndSID(r, site)
 
-		uid := q.Get("u")
+		uid := r.Form.Get("u")
 		if uid == "" {
 			uid = sid
 		}
