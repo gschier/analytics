@@ -19,11 +19,16 @@
   }
 
   function send(path, params) {
+    const url = `${scriptOrigin()}/t${path}`;
+
     params.set('id', website());
     params.set('u', uid());
     params.set('tz', Intl.DateTimeFormat().resolvedOptions().timeZone);
     params.set('xy', screensize());
-    const url = `${scriptOrigin()}/t${path}`;
+
+    for (const [key, value] of params.entries()) {
+      if (!value) params.delete(key);
+    }
 
     if (
       localStorage.disableAnalytics === 'true' ||
