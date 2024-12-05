@@ -14,7 +14,11 @@
     const params = new URLSearchParams();
     params.set('h', `${protocol}//${host}`);
     params.set('p', pathname);
-    params.set('r', document.referrer);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const referrer = urlParams.get('myParam') || document.referrer;
+    params.set('r', referrer);
+
     send('/p', params);
   }
 
