@@ -5,12 +5,26 @@ import (
 	"net/http"
 )
 
+var _ipCache map[string]string
+
 func IpOrTzToCountryCode(ip, tz string) string {
 	countryFromTz := TimezoneToCountryCode(tz)
-	resp, err := http.Get("http://ip-api.com/json/" + ip)
+	code, err := IpToCountryCode(ip)
 	if err != nil {
 		NewLogger("ip").Warn("Failed to fetch ip info. Falling back to TZ", "error", err)
 		return countryFromTz
+	}
+	return code
+}
+
+func IpToCountryCode(ip string) (string, error) {
+	if v, ok := _ipCache[ip]; ok {
+		return v, nil
+	}
+
+	resp, err := http.Get("http://ip-api.com/json/" + ip)
+	if err != nil {
+		return "", err
 	}
 	defer resp.Body.Close()
 
@@ -19,9 +33,9 @@ func IpOrTzToCountryCode(ip, tz string) string {
 	}
 	err = json.NewDecoder(resp.Body).Decode(&ipResp)
 	if err != nil {
-		NewLogger("ip").Warn("Failed to fetch ip info. Falling back to TZ", "error", err)
-		return countryFromTz
+		return "", err
 	}
 
-	return ipResp.CountryCode
+	_ipCache[ip] = ipResp.CountryCode
+	return ipResp.CountryCode, nil
 }

@@ -90,11 +90,13 @@ func LoggingMiddleware(logger *slog.Logger) func(http.Handler) http.Handler {
 			start := time.Now()
 			wrapped := wrapResponseWriter(w)
 			next.ServeHTTP(wrapped, r)
+			country, _ := IpToCountryCode(GetIPAddress(r))
 			logger.Debug(
 				"Request completed to "+r.URL.EscapedPath(),
 				"status", wrapped.status,
 				"headers", r.Header,
-				"addr", r.RemoteAddr,
+				"addr", GetIPAddress(r),
+				"country", country,
 				"query", r.URL.Query(),
 				"method", r.Method,
 				"path", r.URL.EscapedPath(),
