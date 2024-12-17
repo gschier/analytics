@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-var _ipCache map[string]string
+var _ipCache = make(map[string]string)
 
 func IpOrTzToCountryCode(ip, tz string) string {
 	countryFromTz := TimezoneToCountryCode(tz)
