@@ -113,7 +113,7 @@ func SetupRouter() http.Handler {
 			WebsiteID:   site,
 			Name:        eventName,
 			Attributes:  attributes,
-			CountryCode: TimezoneToCountryCode(timezone),
+			CountryCode: IpOrTzToCountryCode(GetIPAddress(r), timezone),
 			ScreenSize:  screensize,
 			Platform:    platform,
 			Version:     version,
