@@ -61,17 +61,16 @@
   }
 
   function website() {
-    return script().getAttribute('data-website');
+    return script().getAttribute('data-website') || '';
   }
 
   function uid() {
-    return script().getAttribute('data-uid');
+    return script().getAttribute('data-uid') || '';
   }
 
   function scriptOrigin() {
-    return script()
-      .getAttribute('src')
-      .match(/https:\/\/[^/]*/)[0];
+    const src = script().getAttribute('src') || '';
+    return src.match(/https:\/\/[^/]*/)[0];
   }
 
   page();
