@@ -23,8 +23,6 @@
   }
 
   function send(path, params) {
-    const url = `${scriptOrigin()}/t${path}`;
-
     params.set('id', website());
     params.set('u', uid());
     params.set('tz', Intl.DateTimeFormat().resolvedOptions().timeZone);
@@ -34,6 +32,8 @@
       if (!value) params.delete(key);
     }
 
+    const url = `${scriptOrigin()}/t${path}?${params.toString()}`;
+
     if (
       localStorage.disableAnalytics === 'true' ||
       window.location.hostname === 'localhost'
@@ -42,7 +42,7 @@
       return;
     }
 
-    navigator.sendBeacon(url, params);
+    fetch(url, { mode: 'no-cors' }).catch(console.error);
   }
 
   let _script = null;
