@@ -38,7 +38,7 @@
       localStorage.disableAnalytics === 'true' ||
       window.location.hostname === 'localhost'
     ) {
-      console.log('Analytics disabled', url, params.toString());
+      console.log('Analytics disabled', params.toString());
       return;
     }
 
