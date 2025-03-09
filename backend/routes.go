@@ -12,7 +12,7 @@ func SetupRouter() http.Handler {
 	r := mux.NewRouter()
 
 	r.Path("/robots.txt").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("User-agent: *\nDisallow: /"))
+		_, _ = w.Write([]byte("User-agent: *\nDisallow: /"))
 	})
 
 	r.Path("/script.js").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -48,7 +48,7 @@ func SetupRouter() http.Handler {
 		counts := FindAnalyticsPageviewsPopular(
 			GetDB(),
 			r.Context(),
-			start(),
+			startData(),
 			end(),
 			siteId,
 		)
@@ -60,7 +60,7 @@ func SetupRouter() http.Handler {
 		counts := FindAnalyticsEventsPopular(
 			GetDB(),
 			r.Context(),
-			start(),
+			startData(),
 			end(),
 			siteId,
 		)
@@ -72,7 +72,7 @@ func SetupRouter() http.Handler {
 		counts := FindAnalyticsReferrersPopular(
 			GetDB(),
 			r.Context(),
-			start(),
+			startData(),
 			end(),
 			siteId,
 		)
@@ -173,7 +173,11 @@ func SetupRouter() http.Handler {
 }
 
 func start() time.Time {
-	return time.Now().Add(-30 * PeriodDay)
+	return time.Now().Add(-60 * PeriodDay)
+}
+
+func startData() time.Time {
+	return time.Now().Add(-3 * PeriodDay)
 }
 
 func end() time.Time {
