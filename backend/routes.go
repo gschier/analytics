@@ -48,7 +48,7 @@ func SetupRouter() http.Handler {
 		counts := FindAnalyticsPageviewsPopular(
 			GetDB(),
 			r.Context(),
-			startData(),
+			start(),
 			end(),
 			siteId,
 		)
