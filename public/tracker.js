@@ -16,7 +16,7 @@
     params.set('p', pathname);
 
     const urlParams = new URLSearchParams(window.location.search);
-    const referrer = urlParams.get('myParam') || document.referrer;
+    const referrer = urlParams.get('ref') || document.referrer;
     params.set('r', referrer);
 
     send('/p', params);
