@@ -23,7 +23,8 @@
   }
 
   function send(path, params) {
-    params.set('id', website());
+    const id = website();
+    params.set('id', id);
     params.set('u', uid());
     params.set('tz', Intl.DateTimeFormat().resolvedOptions().timeZone);
     params.set('xy', screensize());
@@ -36,7 +37,8 @@
 
     if (
       localStorage.disableAnalytics === 'true' ||
-      window.location.hostname === 'localhost'
+      window.location.hostname === 'localhost' ||
+      id === ''
     ) {
       console.log('Analytics disabled', params.toString());
       return;
