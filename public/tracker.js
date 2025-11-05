@@ -7,13 +7,13 @@
   }
 
   function page() {
-    const { pathname, protocol, host } = window.location;
-    if (pathname === sessionStorage.lastPathName || !host) return;
-    sessionStorage.lastPathName = pathname;
+    const { path, protocol, host } = window.location;
+    if (path === sessionStorage.lastPathName || !host) return;
+    sessionStorage.lastPathName = path;
 
     const params = new URLSearchParams();
     params.set('h', `${protocol}//${host}`);
-    params.set('p', pathname);
+    params.set('p', path);
 
     const urlParams = new URLSearchParams(window.location.search);
     const referrer = urlParams.get('ref') || document.referrer;
