@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
+	"log"
 	"log/slog"
 	"os"
 	"time"
+
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
 var logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
@@ -21,18 +23,15 @@ func GetDB() *sqlx.DB {
 		return _db
 	}
 
-	var err error
-	for i := 0; i < 5; i++ {
-		_db, err = sqlx.Connect("postgres", Config.DatabaseURL)
-		if err != nil {
-			logger.Warn("Failed to connect to database", "error", err)
-			time.Sleep(1 * time.Second)
-		} else {
-			return _db
-		}
+	_db, err := sqlx.Connect("postgres", Config.DatabaseURL)
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v\n", err)
 	}
+	_db.SetMaxOpenConns(10)
+	_db.SetMaxIdleConns(10)
+	_db.SetConnMaxLifetime(5 * time.Minute)
 
-	panic("Failed to connect to database")
+	return _db
 }
 
 type Migration struct {
@@ -98,7 +97,7 @@ func migrate(ctx context.Context, db *sqlx.DB) error {
 		}
 
 		_, err = db.NamedExecContext(ctx, `
-			INSERT INTO migrations (name, applied_at) 
+			INSERT INTO migrations (name, applied_at)
 			VALUES (:name, :applied_at)
 		`, &dbRow{
 			Name:      name,
@@ -181,7 +180,7 @@ var migrations = []Migration{{
 	Name: "add_more_event_properties",
 	Forward: func(ctx context.Context, db *sqlx.DB) error {
 		_, err := db.ExecContext(ctx, `
-			ALTER TABLE analytics_events 
+			ALTER TABLE analytics_events
 				ADD COLUMN screen_size    VARCHAR(32)    NOT NULL DEFAULT '',
 				ADD COLUMN country_code   VARCHAR(2)     NOT NULL DEFAULT '',
 				ADD COLUMN version        VARCHAR(32)    NOT NULL DEFAULT '',
@@ -218,6 +217,29 @@ var migrations = []Migration{{
 		_, err := db.ExecContext(ctx, `
 			UPDATE analytics_pageviews SET uid = sid WHERE uid = '';
 			UPDATE analytics_events SET uid = sid WHERE uid = '';
+		`)
+
+		return err
+	},
+}, {
+	Name: "performance_improvements",
+	Forward: func(ctx context.Context, db *sqlx.DB) error {
+		_, err := db.ExecContext(ctx, `
+			-- For event queries filtering by name (GetTotalDownloads, GetEventStats, etc.)
+			CREATE INDEX analytics_events__website_id_name_created_at
+			    ON analytics_events (website_id, name, created_at);
+
+			-- For uid-based distinct counts
+			CREATE INDEX analytics_events__website_id_created_at_uid
+			    ON analytics_events (website_id, created_at, uid);
+
+			-- For pageview queries that filter primarily by created_at (GetPopularPages, etc.)
+			CREATE INDEX analytics_pageviews__created_at
+			    ON analytics_pageviews (created_at);
+
+			-- Remove unused index
+			DROP INDEX analytics_events__website_id_created_at;
+
 		`)
 
 		return err
