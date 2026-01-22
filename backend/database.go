@@ -23,7 +23,8 @@ func GetDB() *sqlx.DB {
 		return _db
 	}
 
-	_db, err := sqlx.Connect("postgres", Config.DatabaseURL)
+	var err error
+	_db, err = sqlx.Connect("postgres", Config.DatabaseURL)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v\n", err)
 	}
