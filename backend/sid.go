@@ -55,7 +55,10 @@ func GetTrustedForwardedIPAddress(r *http.Request, siteID string) string {
 		return ""
 	}
 
-	ipAddress := r.Header.Get("X-Analytics-Client-IP")
+	ipAddress := r.Header.Get("X-Analytics-Origin")
+	if ipAddress == "" {
+		ipAddress = r.Header.Get("X-Analytics-Client-IP")
+	}
 	signature := r.Header.Get("X-Analytics-Signature")
 	if ipAddress == "" || signature == "" || net.ParseIP(ipAddress) == nil {
 		return ""

@@ -18,7 +18,7 @@ func TestGetTrustedForwardedIPAddress(t *testing.T) {
 		t.Fatal(err)
 	}
 	req.Header.Set("User-Agent", "Yaak/2026.4.0")
-	req.Header.Set("X-Analytics-Client-IP", "203.0.113.5")
+	req.Header.Set("X-Analytics-Origin", "203.0.113.5")
 	req.Header.Set(
 		"X-Analytics-Signature",
 		SignAnalyticsForwardedIP(Config.AnalyticsForwardSecret, "site_123", "203.0.113.5", "Yaak/2026.4.0"),
@@ -42,7 +42,7 @@ func TestGetTrustedForwardedIPAddressRejectsInvalidSignature(t *testing.T) {
 		t.Fatal(err)
 	}
 	req.Header.Set("User-Agent", "Yaak/2026.4.0")
-	req.Header.Set("X-Analytics-Client-IP", "203.0.113.5")
+	req.Header.Set("X-Analytics-Origin", "203.0.113.5")
 	req.Header.Set("X-Analytics-Signature", "invalid")
 
 	if got := GetTrustedForwardedIPAddress(req, "site_123"); got != "" {
