@@ -95,7 +95,7 @@ func SetupRouter() http.Handler {
 		timezone := r.Form.Get("tz")
 		platform := r.Form.Get("os")
 		version := r.Form.Get("v")
-		ipAddress := GetIdentityIPAddress(r, site)
+		ipAddress := GetIdentityIPAddress(r)
 		id, sid := GenerateIDAndSIDForIP(r, site, ipAddress)
 
 		uid := r.Form.Get("u")
@@ -132,7 +132,7 @@ func SetupRouter() http.Handler {
 		screensize := r.Form.Get("xy")
 		timezone := r.Form.Get("tz")
 		referrer := r.Form.Get("r")
-		ipAddress := GetIdentityIPAddress(r, site)
+		ipAddress := GetIdentityIPAddress(r)
 		id, sid := GenerateIDAndSIDForIP(r, site, ipAddress)
 
 		uid := r.Form.Get("u")

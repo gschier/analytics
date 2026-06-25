@@ -1,10 +1,7 @@
 package main
 
 import (
-	"crypto/hmac"
 	"crypto/sha1"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"github.com/sebest/xff"
 	"net"
@@ -13,7 +10,7 @@ import (
 )
 
 func GenerateIDAndSID(r *http.Request, siteID string) (string, string) {
-	return GenerateIDAndSIDForIP(r, siteID, GetIdentityIPAddress(r, siteID))
+	return GenerateIDAndSIDForIP(r, siteID, GetIdentityIPAddress(r))
 }
 
 func GenerateIDAndSIDForIP(r *http.Request, siteID, ipAddress string) (string, string) {
@@ -32,8 +29,8 @@ func GenerateIDAndSIDForIP(r *http.Request, siteID, ipAddress string) (string, s
 	return id, sid
 }
 
-func GetIdentityIPAddress(r *http.Request, siteID string) string {
-	if ip := GetTrustedForwardedIPAddress(r, siteID); ip != "" {
+func GetIdentityIPAddress(r *http.Request) string {
+	if ip := GetAnalyticsOriginIPAddress(r); ip != "" {
 		return ip
 	}
 	return GetIPAddress(r)
@@ -50,35 +47,11 @@ func GetIPAddress(r *http.Request) string {
 	return host
 }
 
-func GetTrustedForwardedIPAddress(r *http.Request, siteID string) string {
-	if Config.AnalyticsForwardSecret == "" {
-		return ""
-	}
-
+func GetAnalyticsOriginIPAddress(r *http.Request) string {
 	ipAddress := r.Header.Get("X-Analytics-Origin")
-	if ipAddress == "" {
-		ipAddress = r.Header.Get("X-Analytics-Client-IP")
-	}
-	signature := r.Header.Get("X-Analytics-Signature")
-	if ipAddress == "" || signature == "" || net.ParseIP(ipAddress) == nil {
-		return ""
-	}
-
-	expected := SignAnalyticsForwardedIP(Config.AnalyticsForwardSecret, siteID, ipAddress, r.UserAgent())
-	if !hmac.Equal([]byte(signature), []byte(expected)) {
-		NewLogger("ip").WarnContext(r.Context(), "Invalid analytics forwarded IP signature")
+	if ipAddress == "" || net.ParseIP(ipAddress) == nil {
 		return ""
 	}
 
 	return ipAddress
-}
-
-func SignAnalyticsForwardedIP(secret, siteID, ipAddress, userAgent string) string {
-	mac := hmac.New(sha256.New, []byte(secret))
-	mac.Write([]byte(siteID))
-	mac.Write([]byte{0})
-	mac.Write([]byte(ipAddress))
-	mac.Write([]byte{0})
-	mac.Write([]byte(userAgent))
-	return hex.EncodeToString(mac.Sum(nil))
 }
